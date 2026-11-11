@@ -1,6 +1,7 @@
 import { useState, useLayoutEffect, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import './../styles/landing.css'
+import LiveDemoPos from '../components/landing/LiveDemoPos'
 import {
   Store,
   ChevronDown,
@@ -18,6 +19,8 @@ import {
   BookOpen,
   HeartHandshake,
   MessageCircle,
+  Gift,
+  Ticket,
 } from 'lucide-react'
 
 export default function LandingPage() {
@@ -187,6 +190,9 @@ export default function LandingPage() {
             <a href="#como-funciona" className="hover:text-emerald-700 transition-colors inline-block px-2 py-3 whitespace-nowrap">
               ¿Cómo funciona?
             </a>
+            <a href="#referidos" className="hover:text-emerald-700 transition-colors inline-block px-2 py-3 whitespace-nowrap text-amber-500 font-semibold">
+              🎁 Referidos
+            </a>
             <a href="#faq" className="hover:text-emerald-700 transition-colors inline-block px-2 py-3 whitespace-nowrap">
               Preguntas
             </a>
@@ -212,103 +218,98 @@ export default function LandingPage() {
 
       <main>
         {/* ─────────────────────────────────────────────────────────────
-            2. HERO SECTION
+            2. HERO SECTION — SHOWCASE TÁCTIL POS (LIVE LEDGER)
         ───────────────────────────────────────────────────────────── */}
         <section
-          className="relative min-h-[100svh] flex items-center overflow-hidden"
+          className="relative min-h-[100svh] flex items-center overflow-hidden pt-24 pb-16 lg:py-28"
           style={{ background: 'var(--noche)' }}
         >
-          {/* El spot corre solo (mudo + loop + playsInline): lo primero que ve el visitante */}
-          <video
-            className="absolute inset-0 h-full w-full object-cover"
-            src="/media/viaje/hero.mp4"
-            poster="/media/viaje/hero-poster.jpg"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            aria-hidden="true"
-          />
+          {/* Fondo arquitectónico sutil (sin videos pesados de stock) */}
           <div
-            className="absolute inset-0 pointer-events-none"
+            className="absolute inset-0 pointer-events-none opacity-40"
             style={{
-              background:
-                'linear-gradient(90deg, rgba(10,15,12,.94) 0%, rgba(10,15,12,.80) 42%, rgba(10,15,12,.32) 70%, rgba(10,15,12,.18) 100%)',
+              backgroundImage: 'radial-gradient(circle at 75% 30%, rgba(22, 40, 31, 0.8) 0%, transparent 60%)',
             }}
           />
           <div
-            className="absolute inset-x-0 bottom-0 h-28 pointer-events-none"
-            style={{ background: 'linear-gradient(to top, rgba(10,15,12,.88), transparent)' }}
+            className="absolute inset-x-0 bottom-0 h-32 pointer-events-none"
+            style={{ background: 'linear-gradient(to top, rgba(16,22,19,1), transparent)' }}
           />
 
-          <div className="relative w-full max-w-6xl mx-auto px-4 sm:px-6 pt-20 pb-12" data-reveal>
-            <div className="max-w-2xl mx-auto lg:mx-0 space-y-6 text-center lg:text-left">
-              <div
-                className="inline-flex items-center gap-2 max-w-full px-3.5 py-1.5 rounded-full text-xs font-semibold"
-                style={{ background: 'rgba(216,154,61,.12)', border: '1px solid rgba(216,154,61,.35)', color: 'var(--ambar)' }}
-              >
-                <HeartHandshake size={15} className="shrink-0" />
-                <span className="leading-snug">Para comercios pequeños, emprendimientos y negocios familiares</span>
+          <div className="relative w-full max-w-6xl mx-auto px-4 sm:px-6 z-10" data-reveal>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+              {/* Columna Izquierda: Editorial y Propuesta de Valor (Gancho 1: Fugas invisibles) */}
+              <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
+                <div
+                  className="inline-flex items-center gap-2 max-w-full px-3.5 py-1.5 rounded-full text-xs font-semibold"
+                  style={{ background: 'rgba(216,154,61,.12)', border: '1px solid rgba(216,154,61,.35)', color: 'var(--ambar)' }}
+                >
+                  <Store size={15} className="shrink-0 text-amber-400" />
+                  <span className="leading-snug">Para comercios pequeños, abarrotes y negocios familiares</span>
+                </div>
+
+                <h1
+                  className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.12]"
+                  style={{ color: 'var(--crema)' }}
+                >
+                  El dinero no se va en grandes robos; se escapa en productos vencidos y{' '}
+                  <span className="italic-rk" style={{ color: 'var(--ambar)' }}>
+                    cuentas al ojo
+                  </span>
+                </h1>
+
+                <p className="text-base sm:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0" style={{ color: 'var(--tinta-suave)' }}>
+                  Tu negocio no necesita sistemas corporativos complejos ni plantillas genéricas. Necesita saber al centavo: qué tienes en mostrador, cuánto te costó y cuánto margen bruto te ganaste en cada venta hoy.
+                </p>
+
+                <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
+                  <Link
+                    to="/registro"
+                    className="w-full sm:w-auto font-bold text-base px-7 py-3.5 rounded-2xl transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2"
+                    style={{ background: 'var(--ambar)', color: 'var(--noche)' }}
+                  >
+                    <span>Empieza a anotar tu negocio hoy</span>
+                    <ArrowRight size={18} />
+                  </Link>
+                  <button
+                    onClick={() => setVideoModalAbierto(true)}
+                    className="w-full sm:w-auto font-semibold text-base px-6 py-3.5 rounded-2xl transition-all flex items-center justify-center gap-2 border"
+                    style={{ color: 'var(--crema)', borderColor: 'var(--linea)', background: 'rgba(245,239,230,.05)' }}
+                  >
+                    <Play size={18} style={{ color: 'var(--ambar)' }} />
+                    <span>Ver cómo funciona</span>
+                  </button>
+                </div>
+
+                <div className="pt-3 flex flex-wrap items-center justify-center lg:justify-start gap-5 text-xs font-medium" style={{ color: 'var(--tinta-suave)' }}>
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle2 size={16} style={{ color: 'var(--ambar)' }} />
+                    Sin enredos técnicos: funciona directo en tu celular
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle2 size={16} style={{ color: 'var(--ambar)' }} />
+                    Cálculo automático de margen bruto en cada cobro
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle2 size={16} style={{ color: 'var(--ambar)' }} />
+                    Tu registro es privado: solo tú y tu equipo lo ven
+                  </span>
+                </div>
               </div>
 
-              <h1
-                className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.15]"
-                style={{ color: 'var(--crema)' }}
-              >
-                Anota tu stock y tus cuentas desde el celular, y deja de llevarlas en
-                <span className="italic-rk" style={{ color: 'var(--ambar)' }}> la memoria</span>
-              </h1>
-
-              <p className="text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed" style={{ color: 'var(--tinta-suave)' }}>
-                Tu negocio no necesita página web ni sistemas complicados. Necesita un registro confiable:
-                qué tienes, qué se movió y cómo va. GIN guarda tus números y te los muestra
-                desde donde estés.
-              </p>
-
-              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
-                <Link
-                  to="/registro"
-                  className="w-full sm:w-auto font-bold text-base px-7 py-3.5 rounded-2xl transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2"
-                  style={{ background: 'var(--ambar)', color: 'var(--noche)' }}
-                >
-                  <span>Empieza a anotar tu negocio hoy</span>
-                  <ArrowRight size={18} />
-                </Link>
-                <button
-                  onClick={() => setVideoModalAbierto(true)}
-                  className="w-full sm:w-auto font-semibold text-base px-6 py-3.5 rounded-2xl transition-all flex items-center justify-center gap-2 border"
-                  style={{ color: 'var(--crema)', borderColor: 'var(--linea)', background: 'rgba(245,239,230,.05)' }}
-                >
-                  <Play size={18} style={{ color: 'var(--ambar)' }} />
-                  <span>Ver cómo funciona</span>
-                </button>
-              </div>
-
-              <div className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs font-medium" style={{ color: 'var(--tinta-suave)' }}>
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle2 size={16} style={{ color: 'var(--ambar)' }} />
-                  Sin conocimientos técnicos y funciona en el celular
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle2 size={16} style={{ color: 'var(--ambar)' }} />
-                  Tu registro es privado: solo tú y tu equipo lo ven
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle2 size={16} style={{ color: 'var(--ambar)' }} />
-                  Desde cualquier parte: mira cómo va tu negocio sin estar en la tienda
-                </span>
+              {/* Columna Derecha: El Simulador Táctil POS en Vivo */}
+              <div className="lg:col-span-6 w-full flex justify-center lg:justify-end">
+                <LiveDemoPos />
               </div>
             </div>
-
-            </div>
+          </div>
 
           {/* Cinta inferior: contexto honesto de lo que se está viendo */}
-          <div className="absolute bottom-5 inset-x-0">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center gap-3 text-[10px] sm:text-[11px] font-mono tracking-widest uppercase" style={{ color: 'rgba(245,239,230,.72)' }}>
+          <div className="absolute bottom-4 inset-x-0">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center gap-3 text-[10px] sm:text-[11px] font-mono tracking-widest uppercase" style={{ color: 'rgba(245,239,230,.65)' }}>
               <span className="inline-block h-1.5 w-1.5 rounded-full shrink-0" style={{ background: 'var(--ambar)' }} />
-              <span className="whitespace-nowrap">Un negocio real, de cualquier área</span>
-              <span className="h-px flex-1" style={{ background: 'rgba(245,239,230,.18)' }} />
+              <span className="whitespace-nowrap">Demostración en vivo interactiva</span>
+              <span className="h-px flex-1" style={{ background: 'rgba(245,239,230,.12)' }} />
               <span className="whitespace-nowrap hidden sm:inline">Del mostrador a tu celular</span>
             </div>
           </div>
@@ -768,6 +769,118 @@ export default function LandingPage() {
                 </span>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* ─────────────────────────────────────────────────────────────
+            FIDELIZACIÓN CONDUCTUAL: EL TICKET CON CÓDIGO DE SORTEO (GANCHO 2)
+        ───────────────────────────────────────────────────────────── */}
+        <section className="py-16 md:py-20 bg-[#16281f] text-[#f5efe6] border-y border-[#294235]" data-reveal>
+          <div className="max-w-5xl mx-auto px-4 sm:px-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+              <div className="lg:col-span-7 space-y-4 text-center lg:text-left">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-amber-400/10 border border-amber-400/30 text-amber-300">
+                  <Ticket size={14} />
+                  <span>Efecto Fidelización · Economía Conductual</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-[#f5efe6] leading-tight">
+                  Haz que tus clientes te{' '}
+                  <span style={{ color: 'var(--ambar)' }}>exijan el ticket</span> en cada compra
+                </h2>
+                <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+                  ¿El mayor obstáculo de los sistemas POS? La pereza de anotar cuando hay fila. Con GIN, puedes activar un código de sorteo semanal o mensual en cada comprobante impreso o enviado por WhatsApp.
+                </p>
+                <div className="space-y-2.5 pt-2 text-xs text-slate-300 text-left max-w-lg mx-auto lg:mx-0">
+                  <div className="flex items-start gap-2.5">
+                    <CheckCircle2 size={16} className="text-amber-400 shrink-0 mt-0.5" />
+                    <span><strong>Tus clientes piden el ticket:</strong> Para participar por una ancheta o premio configurado por tu negocio.</span>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <CheckCircle2 size={16} className="text-amber-400 shrink-0 mt-0.5" />
+                    <span><strong>Cero ventas olvidadas:</strong> El 100% de tus ventas entran al sistema sin esfuerzo extra.</span>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <CheckCircle2 size={16} className="text-amber-400 shrink-0 mt-0.5" />
+                    <span className="text-[11px] text-slate-400">Cada comercio define sus propios sorteos, premios y mecánicas según su dinámica comercial.</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mockup del Comprobante con Código de Sorteo */}
+              <div className="lg:col-span-5 flex justify-center">
+                <div className="w-full max-w-xs bg-white text-slate-900 rounded-3xl p-5 shadow-2xl border border-slate-200 font-mono text-xs space-y-3 relative overflow-hidden">
+                  <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-emerald-600 via-amber-500 to-emerald-600" />
+                  <div className="text-center pb-2 border-b border-dashed border-slate-300">
+                    <span className="font-extrabold text-sm block">TIENDA EL BUEN VECINO</span>
+                    <span className="text-[10px] text-slate-500">Comprobante de Venta · GIN POS</span>
+                  </div>
+                  <div className="space-y-1.5 text-[11px]">
+                    <div className="flex justify-between"><span>2x Arroz Diana 1kg</span><span>$10.400</span></div>
+                    <div className="flex justify-between"><span>1x Leche Alquería 1L</span><span>$4.500</span></div>
+                    <div className="flex justify-between font-bold pt-1.5 border-t border-slate-200"><span>TOTAL PAGADO</span><span>$14.900</span></div>
+                  </div>
+                  <div className="bg-amber-50 border border-amber-300 rounded-2xl p-3 text-center space-y-1">
+                    <span className="text-[10px] uppercase font-bold text-amber-800 tracking-wider block">
+                      🎁 N° DE SORTEO SEMANAL
+                    </span>
+                    <span className="text-lg font-black tracking-widest text-slate-900 block font-mono">
+                      #GIN-8492
+                    </span>
+                    <span className="text-[9px] text-amber-900 block">
+                      Válido para la ancheta de fin de mes
+                    </span>
+                  </div>
+                  <p className="text-[9px] text-slate-400 text-center">
+                    Comprobante digital registrado en GIN
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ─────────────────────────────────────────────────────────────
+            PROGRAMA COMERCIO HERMANO (GANCHO 3 - REFERIDOS 2 MESES GRATIS)
+        ───────────────────────────────────────────────────────────── */}
+        <section id="referidos" className="py-16 md:py-20 bg-gradient-to-b from-[#101613] to-[#16281f] text-[#f5efe6] border-t border-[#294235]" data-reveal>
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-6">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-amber-400/15 border border-amber-400/30 text-amber-300">
+              <Gift size={15} />
+              <span>Programa Exclusivo · Crece con tus colegas</span>
+            </div>
+
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-[#f5efe6] tracking-tight">
+              Programa Comercio Hermano: <br className="hidden sm:inline" />
+              <span style={{ color: 'var(--ambar)' }}>2 meses gratis de GIN Pro</span> por cada negocio colega
+            </h2>
+
+            <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
+              En el comercio local nos cuidamos entre todos. Si le recomiendas GIN a la panadería vecina, a la ferretería o a la tienda amiga:
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left pt-4">
+              <div className="p-5 rounded-2xl bg-[#101613] border border-white/5 space-y-2">
+                <div className="w-8 h-8 rounded-lg bg-amber-400/10 text-amber-400 flex items-center justify-center font-bold font-mono">1</div>
+                <h3 className="font-bold text-sm text-[#f5efe6]">Invita a un comercio</h3>
+                <p className="text-xs text-slate-400">Comparte tu enlace o código de negocio desde la app de GIN en tu celular.</p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-[#101613] border border-amber-500/20 space-y-2">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center font-bold font-mono">2</div>
+                <h3 className="font-bold text-sm text-[#f5efe6]">Tu colega activa su cuenta</h3>
+                <p className="text-xs text-slate-400">Al completar su registro y activar su plan Pro, el sistema vincula automáticamente tu código.</p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-[#101613] border border-emerald-500/30 space-y-2">
+                <div className="w-8 h-8 rounded-lg bg-amber-400 text-slate-950 flex items-center justify-center font-bold font-mono">3</div>
+                <h3 className="font-bold text-sm text-amber-300">2 Meses 100% Gratis</h3>
+                <p className="text-xs text-slate-300">Se abonan 60 días a tu suscripción Pro. Con 6 comercios activos, operas gratis todo el año.</p>
+              </div>
+            </div>
+
+            <p className="text-[11px] text-slate-400 font-mono pt-2">
+              * Aplica para nuevos negocios que activen su suscripción paga. Sin límites de acumulación.
+            </p>
           </div>
         </section>
 

@@ -1,11 +1,11 @@
 ﻿# PLAN ACTIVO — Gestión Neiva + Fábrica de Agentes IA
 
-**Fecha:** 2026-10-22
-**Sprint activo:** Sprint 10 — Rebuild del landing (PRIORIDAD ÚNICA — ver pausa abajo)
-**⛔ ESTADO DEL PLAN: PAUSA GENERAL** — hasta tener un landing atractivo que capte más
-clientes potenciales, NO se procede con nada más del plan (ni graphify update, ni Sprint
-10.5 Lite, ni deploy extra). El landing ES lo único en progreso: copy H0 ya en borrador
-(`docs/landing_copy.md`, espera review del dueño) → H1/H2 → F0–F3 → QA1.
+**Fecha:** 2026-11-10
+**Sprint activo:** Sprint 9 — Despliegue y Activación en Producción
+**🟢 ESTADO DEL PLAN: PAUSA LEVANTADA** — Sprint 10 completado con éxito tras auditoría conjunta:
+se descartó la dependencia bloqueante de video en el Hero y se implementó el showcase táctil
+en vivo `LiveDemoPos.jsx` con tres ganchos conductuales (fuga invisible, sorteo en tickets y programa Comercio Hermano).
+El frontend compila limpio y sin errores (`vite build` exitoso).
 
 > Este documento es **mutable por Claude y Gemini**. Ver `AGENTS.md` para el protocolo de cambios.
 > Usa `> [GEMINI PROPONE]` o `> [CLAUDE PROPONE]` para proponer cambios sin implementarlos aún.
@@ -30,8 +30,8 @@ clientes potenciales, NO se procede con nada más del plan (ni graphify update, 
 [✅] Sprint 8.2 — Transformación Web Informativa + Onboarding Educativo No Bloqueante (COMPLETO)
 [✅] Sprint 8.3 — Gobernanza RBAC en Asistente IA, Reabastecimiento con Costo y Latencia Cero (COMPLETO)
 [✅] Sprint 8.4 — Entitlements (Trial 15 Días), Normalización Errores 422, UI Pro en Header (COMPLETO)
+[✅] Sprint 10 — Landing Premium Dark-First: Live Ledger POS + 3 Ganchos Conductuales (COMPLETO)
 [ ] Sprint 9 — Despliegue y Activación en Producción (SIGUIENTE)
-[ ] Sprint 10 — Landing Premium Dark-First (ACTIVA — **prioridad única, plan en PAUSA hasta terminarlo**; copy ICP primero)
 [ ] Sprint 10.5 — Redefinición de Alcance: SaaS vertical microempresarial + Modo Lite "Solo Stock" (DECISIÓN DEL DUEÑO — detalla tras el landing)
 ```
 
@@ -941,3 +941,17 @@ teclado + LCP), YA que el guion usa las tomas reales. Luego QA1 (Gemini) del lan
 - **Solución:** acotar `sqlalchemy>=2.0.30,<2.1` en `requirements.txt` (psycopg2 sigue siendo el default en 2.0.x).
 - **Verificación:** venv local con SQLAlchemy 2.0.52 queda incluido en el rango (sin reinstalación local); Dockerfile instala del mismo requirements; alembic y FastAPI comparten el mismo engine en `app/database.py`.
 - **Pendiente:** migración futura a SQLAlchemy 2.1 requeriría agregar `psycopg[binary]` y URL `postgresql+psycopg://`.
+
+### 2026-11-10 — ✅ CIERRE SPRINT 10: Live Ledger POS + 3 Ganchos Conductuales (Pausa Levantada)
+- **Eliminación del cuello de botella:** Descartada definitivamente la dependencia de video de stock en el Hero (eliminado `<video src="/media/viaje/hero.mp4">` y capas de bloqueo).
+- **Showcase Táctil POS (`frontend/src/components/landing/LiveDemoPos.jsx`):**
+  - Implementado componente interactivo con `useReducer` determinista.
+  - Aritmética financiera en vivo: Arroz Diana (\$5.200), Leche Alquería (\$4.500), Café Sello Rojo (\$17.600).
+  - Cálculo de Margen Bruto Estimado (`(Venta - Costo) / Venta`), stock inmutable y protección contra doble clic en cobro.
+  - Leyenda clara: "SIMULACIÓN · DATOS ILUSTRATIVOS".
+- **Integración de los 3 Ganchos Conductuales en `LandingPage.jsx`:**
+  - **Gancho 1 (Hero):** Fuga invisible de capital por productos vencidos y cuentas al ojo.
+  - **Gancho 2 (Fidelización):** Sección dedicada al ticket con código de sorteo semanal para que el cliente final exija su comprobante.
+  - **Gancho 3 (Comercio Hermano):** Sección de referidos con recompensa de 2 meses gratis de GIN Pro por cada nuevo comercio colega que active plan de pago.
+- **Verificación Técnica:** `npm run build` ejecutado en `frontend/` completado con éxito en 38.92 segundos, 0 errores, chunks optimizados (LandingPage bundle en 63.48 kB).
+- **Siguiente paso:** Sprint 9 (Despliegue y Activación en Producción).
