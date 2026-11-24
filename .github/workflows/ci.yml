@@ -25,23 +25,35 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Stage 1 — Syntax & Compile Check
+      - name: Stage 1 — Static Lint (ruff)
+        run: |
+          ruff check app
+
+      - name: Stage 2 — Syntax & Compile Check
         run: |
           python -m compileall -q app tests
 
-      - name: Stage 2 — Module Boundary Enforcement (import-linter)
+      - name: Stage 3 — Module Boundary Enforcement (import-linter)
         run: |
           lint-imports
 
-      - name: Stage 3 — Backend Test Suite (Unit, Integration, E2E)
+      - name: Stage 4 — Backend Test Suite & Coverage Report
         env:
           DATABASE_URL: "sqlite:///:memory:"
           SECRET_KEY: "ci-test-secret-key-not-for-production-use-only"
           SUPERADMIN_KEY: "ci-superadmin-test-key"
         run: |
-          pytest tests/ -q
+          pytest tests/ -q --cov=app --cov-report=xml --cov-report=term-missing
 
-      - name: Stage 4 — End-to-End Business Journey Simulation
+      - name: Upload Backend Coverage Artifact (coverage.xml)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-xml
+          path: coverage.xml
+          if-no-files-found: ignore
+
+      - name: Stage 5 — End-to-End Business Journey Simulation (SQLite)
         env:
           DATABASE_URL: "sqlite:///:memory:"
           SECRET_KEY: "ci-test-secret-key-not-for-production-use-only"
@@ -67,7 +79,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install frontend dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run Voice Turn Manager FSM Tests
         run: npm run test:voice

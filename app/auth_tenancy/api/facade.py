@@ -1,5 +1,6 @@
 """Public facade for auth_tenancy bounded context."""
 from uuid import UUID
+
 from sqlalchemy.orm import Session
 
 from app.auth_tenancy.api.contracts import CompanySummaryDTO, UserSummaryDTO

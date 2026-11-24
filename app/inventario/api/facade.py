@@ -1,6 +1,7 @@
 """Public facade for inventario bounded context."""
 from decimal import Decimal
 from uuid import UUID
+
 from sqlalchemy.orm import Session
 
 from app.inventario.api.contracts import StockDeductionResultDTO

@@ -1034,7 +1034,7 @@ class GroqIntentProvider:
 
         try:
             data = json.loads(content)
-        except Exception as json_err:
+        except Exception:
             AGENT_TELEMETRY["intent_parse_failure"] += 1
             logger.warning("Groq retornó JSON inválido: %s", content)
             return AgentInterpretation(intent="unknown", raw_text=text, confidence=0.0)
@@ -1084,7 +1084,7 @@ class GeminiIntentProvider:
             response = model_inst.generate_content(full_prompt)
             content = response.text.strip()
             if content.startswith("```"):
-                lines = [l for l in content.split("\n") if not l.strip().startswith("```")]
+                lines = [line for line in content.split("\n") if not line.strip().startswith("```")]
                 content = "\n".join(lines).strip()
             AGENT_TELEMETRY["llm_provider_success"] += 1
         except Exception as exc:
@@ -1097,7 +1097,7 @@ class GeminiIntentProvider:
 
         try:
             data = json.loads(content)
-        except Exception as json_err:
+        except Exception:
             AGENT_TELEMETRY["intent_parse_failure"] += 1
             logger.warning("Gemini retornó JSON inválido: %s", content)
             return AgentInterpretation(intent="unknown", raw_text=text, confidence=0.0)

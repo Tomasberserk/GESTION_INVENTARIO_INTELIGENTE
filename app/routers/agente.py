@@ -7,13 +7,14 @@ al AgentOrchestrator, validando la identidad del usuario y empresa mediante JWT.
 import os
 import time
 from typing import Any
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
+
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from app import models
 from app.database import get_db
-from app.dependencies import get_current_user, require_pro_entitlement
+from app.dependencies import require_pro_entitlement
 from app.services.agente.agent_orchestrator import AgentOrchestrator
 from app.services.agente.intent_provider import LLMProviderUnavailableError
 from app.services.agente.session_store import SessionStoreUnavailableError

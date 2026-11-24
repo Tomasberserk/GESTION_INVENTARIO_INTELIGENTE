@@ -5,7 +5,10 @@ from app.core.logging import (
     log_security_event,
     set_correlation_id,
 )
-from app.core.security_middleware import CorrelationIdMiddleware, SecurityHeadersMiddleware
+from app.core.security_middleware import (
+    CorrelationIdMiddleware,
+    SecurityHeadersMiddleware,
+)
 
 __all__ = [
     "CorrelationIdMiddleware",

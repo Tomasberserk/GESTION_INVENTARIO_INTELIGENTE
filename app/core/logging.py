@@ -1,9 +1,9 @@
 """Structured JSON logging and correlation ID propagation for security and operational events."""
-from contextvars import ContextVar
-from datetime import datetime, timezone
 import json
 import logging
 import uuid
+from contextvars import ContextVar
+from datetime import datetime, timezone
 
 LOG_FILE = "security_audit.log"
 

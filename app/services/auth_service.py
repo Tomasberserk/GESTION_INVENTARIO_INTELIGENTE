@@ -8,8 +8,8 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from app import models
-from app.schemas.usuario import UsuarioCrear
 from app.core.logging import log_security_event
+from app.schemas.usuario import UsuarioCrear
 
 SECRET_KEY = os.getenv("SECRET_KEY", "")
 if not SECRET_KEY:

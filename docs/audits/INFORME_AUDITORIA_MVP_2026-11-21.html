@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Auditoría MVP — Gestión Neiva — 2026-11-21</title>
+  <style>
+    :root { --bg:#08111f; --panel:#101d30; --panel2:#15263d; --text:#e8f0fb; --muted:#a9b9ce; --line:#29405e; --ok:#3ddc97; --warn:#f7bd50; --bad:#ff6f7f; --info:#72b7ff; }
+    * { box-sizing:border-box; } body { margin:0; background:var(--bg); color:var(--text); font:16px/1.55 Inter,Segoe UI,Arial,sans-serif; }
+    .wrap { max-width:1180px; margin:auto; padding:32px 22px 70px; } header { border:1px solid var(--line); background:linear-gradient(135deg,#10233d,#0c1728); padding:32px; border-radius:18px; display:grid; grid-template-columns:1.5fr .8fr; gap:24px; }
+    h1,h2,h3 { line-height:1.15; margin:0 0 12px; } h1 { font-size:clamp(1.8rem,4vw,2.75rem); } h2 { font-size:1.4rem; margin-top:4px; } h3 { font-size:1.05rem; } p { margin:0 0 12px; } .muted { color:var(--muted); } .eyebrow,.pill { display:inline-block; border-radius:999px; padding:4px 10px; font-size:.78rem; font-weight:750; letter-spacing:.04em; text-transform:uppercase; }
+    .eyebrow { color:#b8d6ff; background:#17365e; } .pill.bad { background:#4b202b; color:#ffb8c1; } .pill.ok { background:#143b31; color:#a7f3d0; } .pill.warn { background:#493713; color:#ffe0a0; } .verdict { border:1px solid #8b3342; background:#291922; border-radius:14px; padding:20px; align-self:center; } .verdict b { display:block; color:#ffb8c1; font-size:1.4rem; margin:7px 0; }
+    .kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:22px 0; } .card { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px; } .metric { font-size:2rem; font-weight:800; line-height:1; margin:8px 0; } .label { color:var(--muted); font-size:.85rem; }
+    .section { margin-top:22px; background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:24px; } .grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }.chart-row { display:grid; grid-template-columns:175px 1fr 58px; gap:10px; align-items:center; margin:10px 0; } .track { height:12px; background:#1d3048; border-radius:999px; overflow:hidden; } .fill { height:100%; border-radius:999px; } .okfill { background:var(--ok); } .warnfill { background:var(--warn); } .badfill { background:var(--bad); } .infofill { background:var(--info); }
+    table { width:100%; border-collapse:collapse; margin-top:12px; font-size:.92rem; } th,td { text-align:left; vertical-align:top; border-bottom:1px solid var(--line); padding:11px 9px; } th { color:#c9dcf7; font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; } code { color:#b8d6ff; font-family:Consolas,monospace; font-size:.87em; } ul,ol { margin:8px 0 0; padding-left:22px; } li { margin:7px 0; } .finding { border-left:4px solid var(--bad); padding:14px 16px; background:#1d1823; margin:12px 0; border-radius:0 10px 10px 0; } .finding.major { border-left-color:var(--warn); background:#211e18; } .finding.info { border-left-color:var(--info); background:#142035; } .finding strong { display:block; margin-bottom:4px; } .two-col { columns:2; column-gap:28px; } .note { border:1px dashed #496789; color:#c9dcf7; padding:13px; border-radius:10px; background:#0d1a2c; } a { color:#91c5ff; } footer { color:var(--muted); margin-top:26px; font-size:.86rem; }
+    @media (max-width:800px) { header,.grid { grid-template-columns:1fr; } .kpis { grid-template-columns:repeat(2,1fr); } .chart-row { grid-template-columns:130px 1fr 45px; } .two-col { columns:1; } } @media (max-width:460px) { .wrap { padding:18px 13px 40px; } header,.section { padding:18px; } .kpis { grid-template-columns:1fr; } table { font-size:.83rem; } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <div>
+        <span class="eyebrow">Auditoría técnica de preparación MVP</span>
+        <h1>Gestión Neiva: el diseño está adelantado; la evidencia ejecutable todavía no</h1>
+        <p class="muted">Repositorio auditado: <code>GESTION_INVENTARIO_INTELIGENTE</code> · 21 de noviembre de 2026 · Modo: documentación, código, pipeline y pruebas locales.</p>
+        <p>Rúbrica aplicada: <strong>Monolith Governance Framework v2.1.0</strong> compartida para la evaluación. Se contrastó documentación con el repositorio; no se modificó código de producción.</p>
+      </div>
+      <aside class="verdict">
+        <span class="pill bad">Dictamen actual</span>
+        <b>No conforme para defender como monolito modular verificado</b>
+        <p class="muted">No significa que el MVP no tenga valor: significa que hay controles declarados que hoy no se pueden demostrar y dos desalineaciones arquitectónicas críticas.</p>
+      </aside>
+    </header>
+
+    <section class="kpis" aria-label="Indicadores principales">
+      <div class="card"><div class="label">Documentación SDD</div><div class="metric">83%</div><div class="muted">15/15 secciones presentes; algunas afirman estados no verificables.</div></div>
+      <div class="card"><div class="label">Evidencia ejecutable</div><div class="metric">46%</div><div class="muted">Unitarias y voz pasan; cobertura, límites y E2E no se pudieron certificar.</div></div>
+      <div class="card"><div class="label">Preparación MVP</div><div class="metric">54%</div><div class="muted">Base funcional prometedora, pero no lista aún para una certificación rigurosa.</div></div>
+      <div class="card"><div class="label">Pruebas recolectadas</div><div class="metric">94</div><div class="muted">Pytest las descubre; su ejecución integral quedó bloqueada por el entorno.</div></div>
+    </section>
+
+    <section class="section">
+      <h2>Resumen ejecutivo</h2>
+      <div class="grid">
+        <div>
+          <p><span class="pill ok">Lo sólido</span></p>
+          <ul>
+            <li>La estructura SDD está completa: gobernanza, contexto, dominio, API, módulos, UX, calidad y operaciones tienen artefactos concretos.</li>
+            <li>Se documentan seis contextos de negocio, fachadas, ADRs, matriz HU/NFR → pruebas, OpenAPI 3.1 y una secuencia Alembic hasta la migración 013.</li>
+            <li>Se recolectaron <strong>94</strong> pruebas sin error de colección; las 4 unitarias y las 4 pruebas de FSM de voz pasaron localmente.</li>
+            <li><code>.env</code> no está versionado; el repositorio solo rastrea <code>.env.example</code>.</li>
+          </ul>
+        </div>
+        <div>
+          <p><span class="pill bad">Lo que impide aprobar hoy</span></p>
+          <ul>
+            <li>La regla crítica de no FKs entre módulos se contradice con FKs activas hacia <code>empresas</code>, propiedad de <code>auth_tenancy</code>.</li>
+            <li>El tráfico HTTP sigue entrando por <code>app/routers</code> y <code>app/services</code> heredados; las fachadas modulares no son el camino de ejecución dominante.</li>
+            <li>La política de cobertura 80%/90% existe en documentos, pero no existe ni en el workflow real ni en el entorno local.</li>
+            <li>La E2E queda bloqueada antes de la primera petición por un entorno virtual copiado desde otra ruta y un bloqueo de <code>TestClient</code> en Windows/Python 3.13.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Lectura visual de cumplimiento</h2>
+      <p class="muted">Indicadores de esta auditoría, no una fórmula oficial del framework. Separan la calidad de los documentos de la evidencia que un profesor puede repetir.</p>
+      <div class="chart-row"><span>Documentación SDD</span><div class="track"><div class="fill okfill" style="width:83%"></div></div><strong>83%</strong></div>
+      <div class="chart-row"><span>Arquitectura aplicada</span><div class="track"><div class="fill warnfill" style="width:50%"></div></div><strong>50%</strong></div>
+      <div class="chart-row"><span>Datos y fronteras</span><div class="track"><div class="fill badfill" style="width:38%"></div></div><strong>38%</strong></div>
+      <div class="chart-row"><span>Calidad y pipeline</span><div class="track"><div class="fill badfill" style="width:42%"></div></div><strong>42%</strong></div>
+      <div class="chart-row"><span>Operaciones</span><div class="track"><div class="fill warnfill" style="width:55%"></div></div><strong>55%</strong></div>
+      <div class="chart-row"><span>Preparación MVP total</span><div class="track"><div class="fill infofill" style="width:54%"></div></div><strong>54%</strong></div>
+    </section>
+
+    <section class="section">
+      <h2>Resultados de ejecución</h2>
+      <table>
+        <thead><tr><th>Comprobación</th><th>Resultado</th><th>Evidencia / lectura</th></tr></thead>
+        <tbody>
+          <tr><td>Descubrimiento de tests</td><td><span class="pill ok">Pasa</span></td><td><code>pytest tests --collect-only -q</code> descubrió 94 pruebas en 0.35 s, incluidas unitarias, fachadas, concurrencia, seguridad y E2E.</td></tr>
+          <tr><td>Pruebas unitarias</td><td><span class="pill ok">4/4</span></td><td><code>pytest tests/unit -q</code>: 4 pasaron en 1.03 s.</td></tr>
+          <tr><td>FSM de voz frontend</td><td><span class="pill ok">4/4</span></td><td><code>npm run test:voice</code> pasó: entrega tardía, descarte por turno nuevo, flujo normal y ventana tardía manual.</td></tr>
+          <tr><td>Cobertura</td><td><span class="pill bad">No medible</span></td><td><code>pytest --cov=app --cov-fail-under=80</code> falla porque el entorno no reconoce <code>pytest-cov</code> ni <code>coverage</code>. No es válido afirmar 80% ni 90% hasta producir un artefacto de cobertura.</td></tr>
+          <tr><td>Límites de módulos</td><td><span class="pill bad">No verificable</span></td><td><code>python -m importlinter</code> falla: el paquete no está instalado en el entorno actual. La configuración existe, pero la evidencia de ejecución no.</td></tr>
+          <tr><td>Recorrido E2E “tendero”</td><td><span class="pill bad">Bloqueado</span></td><td>La prueba se detiene durante el fixture <code>TestClient(app)</code>, antes de registrar una tienda. El volcado a 10 s apunta a <code>anyio</code>/<code>TestClient</code>, no a un endpoint de negocio.</td></tr>
+          <tr><td>Web móvil pública a 360 × 800</td><td><span class="pill warn">Parcial</span></td><td>Inicio, registro y login cargan sin desbordamiento horizontal. Los botones primarios miden 48–76 px, pero el enlace superior “Crear cuenta” mide 44 px y los inputs de acceso/registro 45 px: no satisfacen de forma estricta el objetivo de 48 px de <code>NFR-10</code>.</td></tr>
+          <tr><td>Build frontend</td><td><span class="pill warn">No repetido</span></td><td>Se preservó <code>frontend/dist/index.html</code>, que ya tenía cambios no confirmados. El workflow sí declara <code>npm run build</code>; debe correrse en un árbol limpio o después de resguardar ese archivo.</td></tr>
+        </tbody>
+      </table>
+      <div class="note"><strong>Diagnóstico reproducible del bloqueo local:</strong> <code>.venv/pyvenv.cfg:5</code> declara que el entorno fue creado para <code>.../GESTION_NEIVA_CLAUDE/.venv</code>, no para este checkout. Además, el ejecutable activo es Python 3.13.2 y el proyecto fija Pytest 7.4.3. Es una instalación no reproducible, no una base válida para certificar el MVP.</div>
+    </section>
+
+    <section class="section">
+      <h2>Hallazgos priorizados</h2>
+      <article class="finding"><strong>DAT-03 · Crítico · Llaves foráneas cruzan límites de módulo</strong><p>La documentación afirma que ninguna <code>FOREIGN KEY</code> cruza módulos (<code>02-domain/module-boundaries.md:26-35</code>). Sin embargo, <code>app/models.py:167,212,279,348</code> impone <code>empresa_id → empresas.id</code> en tablas de inventario, ventas, soporte y agente. Como <code>empresas</code> pertenece a <code>auth_tenancy</code>, son cruces de propiedad. La migración 013 resolvió tres referencias, pero dejó esta familia de FKs. <strong>Corrección:</strong> decidir y documentar una excepción explícita de tenancy o reemplazar esas FKs por UUID indexados y validación vía fachada; después, añadir migración, prueba y ADR si cambia la decisión.</p></article>
+      <article class="finding"><strong>ARC-03 / ARC-08 · Crítico · El camino de ejecución conserva la arquitectura heredada</strong><p>La estructura prometida exige API de módulo y lógica interna (<code>05-architecture/module-structure.md:8-31,43-48</code>). Pero <code>app/main.py:16,79-81</code> registra los routers heredados y estos importan servicios heredados, por ejemplo <code>app/routers/ventas.py:12</code>, <code>auth.py:14</code> y <code>productos.py:19</code>. Incluso <code>app/pos_ventas/internal/service.py:8</code> delega en <code>app.services.venta_service</code>. Las fachadas existen, pero todavía no son el borde operativo principal. <strong>Corrección:</strong> migrar cada router a una fachada por módulo y retirar el acceso directo a <code>app/services</code> de forma incremental.</p></article>
+      <article class="finding major"><strong>QLT-02 / DEV-01 · Mayor · La cobertura declarada no es una compuerta real</strong><p><code>NFR-07</code> exige 80% global y 90% para <code>pos_ventas</code> (<code>04-requirements/non-functional.md:20</code>) y la estrategia lo repite (<code>11-quality/testing-strategy.md:15-18</code>). El workflow real ejecuta solo <code>pytest tests/ -q</code> (<code>.github/workflows/ci.yml:36-42</code>) y no produce cobertura ni aplica umbral. <strong>Corrección:</strong> declarar <code>pytest-cov</code>, ejecutar cobertura en CI, separar el informe por paquete y fallar por debajo de los dos umbrales.</p></article>
+      <article class="finding major"><strong>ARC-05 / ARC-06 · Mayor · Import-linter no se puede ejecutar localmente y no protege todos los módulos</strong><p>La configuración contiene contratos para cinco módulos y <code>platform</code> (<code>.importlinter:7-87</code>), pero no hay contrato que prohíba importar <code>reportes_analytics.internal</code>. En el entorno auditado no está instalado el paquete. <strong>Corrección:</strong> reconstruir el entorno desde <code>requirements.txt</code>, agregar el contrato faltante, y guardar evidencia de una violación deliberada fallando antes de la revisión.</p></article>
+      <article class="finding major"><strong>DEV-01 / DEV-03 · Mayor · El pipeline real no coincide con el documento</strong><p><code>10-devops/ci-cd.md</code> promete <code>lint → boundary-check → test → package → deploy</code>, pero el YAML termina en la simulación E2E backend y la verificación frontend; no hay pasos de paquete ni despliegue, ni triggers de tag para producción en el archivo auditado. <strong>Corrección:</strong> alinear el YAML con la matriz documentada o corregir el documento para describir el pipeline externo verificable.</p></article>
+      <article class="finding major"><strong>OBS-02 / OBS-03 · Mayor · Observabilidad documentada, no implementada</strong><p>Se declaran los tres indicadores mínimos (<code>13-operations/observability.md:19-25</code>), pero no hay implementación de contadores/histogramas en <code>app/</code>. La misma documentación afirma que Redis degradará salud ante cualquier fallo (<code>:27-34</code>), mientras <code>app/main.py:149-151</code> solo lo exige con <code>HEALTH_REQUIRE_REDIS=true</code>. <strong>Corrección:</strong> instrumentar métricas o retirar la afirmación; decidir y documentar si Redis es dependencia crítica.</p></article>
+      <article class="finding major"><strong>NFR-10 / UX-02 · Mayor · La vista móvil no alcanza aún el tamaño táctil declarado</strong><p>La inspección visual de la web pública a <code>360 × 800</code> confirmó que no hay scroll horizontal en inicio, registro ni login. Sin embargo, el enlace superior “Crear cuenta” tiene 44 px de alto y los campos de formulario 45 px; <code>NFR-10</code> exige objetivos táctiles de al menos 48 × 48 px. <strong>Corrección:</strong> fijar una altura mínima de 48 px para enlaces CTA, inputs y botones interactivos y añadir una prueba visual automatizada del breakpoint de 360 px.</p></article>
+      <article class="finding info"><strong>DOC-12 · Menor · Hay deriva documental verificable</strong><p><code>00-sdd-guide.md:61-62</code> aún dice migraciones 001–012 y OpenAPI 3.0, pero existe migración 013 y la especificación declara <code>openapi: 3.1.0</code>. Esto no rompe el MVP, pero contradice la regla de documentación viva.</p></article>
+    </section>
+
+    <section class="section">
+      <h2>Scorecard de gobernanza</h2>
+      <table>
+        <thead><tr><th>Área</th><th>Estado</th><th>Lectura</th></tr></thead>
+        <tbody>
+          <tr><td>00–04: gobernanza, contexto, dominio, producto y requisitos</td><td><span class="pill ok">Fuerte</span></td><td>Documentación completa, trazabilidad HU/NFR y artefactos con formato consistente. Quedan evidencias humanas/CI por comprobar.</td></tr>
+          <tr><td>05: arquitectura</td><td><span class="pill warn">Parcial</span></td><td>La decisión modular está escrita y los paquetes existen, pero routers/servicios heredados son el flujo real.</td></tr>
+          <tr><td>06: datos</td><td><span class="pill bad">No conforme</span></td><td>Secuencia Alembic lineal y ADR-004 presentes; FKs de tenancy cruzan la frontera descrita.</td></tr>
+          <tr><td>07–09: API, UML y módulos</td><td><span class="pill warn">Parcial</span></td><td>Contratos, diagramas y catálogos están presentes; hace falta comprobarlos contra el recorrido ejecutable y reforzar las fachadas.</td></tr>
+          <tr><td>10–11: DevOps y calidad</td><td><span class="pill bad">No conforme</span></td><td>La intención está bien documentada, pero faltan cobertura ejecutable, un entorno reproducible y stages reales de package/deploy.</td></tr>
+          <tr><td>12: UX/UI</td><td><span class="pill warn">Parcial</span></td><td>Design system y especificaciones de pantallas presentes. La web pública no desborda a 360 px, pero hay objetivos táctiles de 44–45 px frente a un NFR de 48 px.</td></tr>
+          <tr><td>13: operaciones</td><td><span class="pill warn">Parcial</span></td><td>Logging con correlación y health endpoint existen; métricas y consistencia de health no están demostradas.</td></tr>
+          <tr><td>_stacks y alcance</td><td><span class="pill warn">Parcial</span></td><td>Un único stack y un deployable. El entorno local no reproduce las versiones declaradas y debe regenerarse.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>Plan de recuperación para la sustentación</h2>
+      <div class="grid">
+        <div>
+          <h3>Ahora — cerrar las pruebas demostrables</h3>
+          <ol>
+            <li>Eliminar y recrear <code>.venv</code> desde este checkout con la versión de Python acordada; no reutilizar la copia cuyo <code>pyvenv.cfg</code> apunta a otro proyecto.</li>
+            <li>Agregar dependencias de desarrollo faltantes y congelar versiones compatibles.</li>
+            <li>Ejecutar y guardar: <code>pytest tests -q</code>, <code>pytest --cov=app --cov-fail-under=80</code>, <code>lint-imports</code>, <code>npm run test:voice</code> y <code>npm run build</code>.</li>
+            <li>Con un PostgreSQL de prueba, correr la E2E de tendero: registrar tienda → crear producto → vender → verificar stock/dashboard → soporte → logout.</li>
+          </ol>
+        </div>
+        <div>
+          <h3>Siguiente sprint — hacer real el monolito modular</h3>
+          <ol>
+            <li>Resolver las FKs de tenancy con una decisión explícita, migración reversible, ADR y pruebas.</li>
+            <li>Mover cada router hacia la fachada de su bounded context; convertir <code>app/services</code> en código de transición o eliminarlo por módulo.</li>
+            <li>Completar <code>reportes_analytics</code> en import-linter y probar una infracción deliberada.</li>
+            <li>Modificar CI para que cobertura, límites, package y deployment estén en el orden documentado y sean bloqueantes.</li>
+          </ol>
+        </div>
+      </div>
+      <h3 style="margin-top:20px">Antes de presentar al profesor</h3>
+      <div class="two-col">
+        <ul>
+          <li>Actualizar <code>00-sdd-guide.md</code>, <code>07-api/README.md</code> y cualquier cifra de “tests passing” únicamente con resultados recién ejecutados.</li>
+          <li>Adjuntar los XML/HTML de cobertura y el log de CI exitoso; no usar porcentajes declarativos sin artefacto.</li>
+          <li>Grabar una demostración breve del recorrido tendero y enlazarla a TC/HU correspondientes.</li>
+          <li>Hacer una demo deliberada: importar un <code>internal/</code> desde otro módulo, demostrar que CI falla, revertir y mostrar que pasa.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>No verificable en esta auditoría</h2>
+      <table><thead><tr><th>Control</th><th>Evidencia necesaria para cerrarlo</th></tr></thead><tbody>
+        <tr><td>90% específico de <code>pos_ventas</code></td><td>Reporte de cobertura por paquete, generado en CI desde entorno limpio.</td></tr>
+        <tr><td>p95 &lt;300 ms con 50 transacciones</td><td>Resultado fechado de Locust contra PostgreSQL/Redis de prueba, con configuración y percentiles.</td></tr>
+        <tr><td>Rollback de migraciones</td><td>Log CI de <code>alembic upgrade head</code> seguido de <code>alembic downgrade -1</code> sobre esquema de prueba.</td></tr>
+        <tr><td>Despliegues y aprobaciones</td><td>Historial de GitHub Actions/Render/Vercel y reglas de protección de ramas.</td></tr>
+        <tr><td>UX móvil y accesibilidad</td><td>Resultado Lighthouse y recorrido manual a 360 px con estados vacío/carga/error.</td></tr>
+        <tr><td>POS, inventario y checkout autenticados en móvil</td><td>Cuenta de demostración no productiva o autorización para crear una, más captura del recorrido completo sin datos reales.</td></tr>
+      </tbody></table>
+    </section>
+
+    <footer>Conclusión: el siguiente paso de mayor valor no es añadir otra funcionalidad. Es reconstruir el entorno reproducible y obtener evidencia automatizada real. Con eso se sabrá qué defectos son del producto y cuáles eran solo una ilusión de la documentación.</footer>
+  </main>
+</body>
+</html>

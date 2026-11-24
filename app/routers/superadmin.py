@@ -117,11 +117,11 @@ def actualizar_plan(
     from app.models import PlanEmpresa
     try:
         nuevo_plan = PlanEmpresa(data.plan)
-    except ValueError:
+    except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Plan inválido. Valores permitidos: {[p.value for p in PlanEmpresa]}",
-        )
+        ) from exc
     empresa = db.query(models.Empresa).filter(models.Empresa.id == empresa_id).first()
     if not empresa:
         raise HTTPException(status_code=404, detail="Empresa no encontrada")

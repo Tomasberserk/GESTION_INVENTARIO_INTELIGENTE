@@ -7,7 +7,6 @@ from sqlalchemy import (
     Column,
     Date,
     DateTime,
-    Enum as SAEnum,
     ForeignKey,
     Index,
     Numeric,
@@ -15,8 +14,11 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
 )
+from sqlalchemy import (
+    Enum as SAEnum,
+)
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import foreign, relationship
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from app.database import Base

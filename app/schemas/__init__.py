@@ -1,20 +1,20 @@
 from app.schemas.empresa import EmpresaCrear, EmpresaRespuesta
+from app.schemas.producto import (
+    InventarioRespuesta,
+    ProductoActualizar,
+    ProductoCrear,
+    ProductoRespuesta,
+)
 from app.schemas.usuario import (
-    UsuarioCrear,
-    UsuarioRespuesta,
     LoginForm,
     TokenRespuesta,
-)
-from app.schemas.producto import (
-    ProductoCrear,
-    ProductoActualizar,
-    ProductoRespuesta,
-    InventarioRespuesta,
+    UsuarioCrear,
+    UsuarioRespuesta,
 )
 from app.schemas.venta import (
     DetalleVentaCrear,
-    VentaCrear,
     DetalleVentaRespuesta,
+    VentaCrear,
     VentaRespuesta,
     VentaResumen,
 )

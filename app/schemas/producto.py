@@ -1,7 +1,8 @@
-from uuid import UUID
-from datetime import datetime, date
+from datetime import date, datetime
 from decimal import Decimal
-from typing import Optional, List, Literal
+from typing import List, Literal, Optional
+from uuid import UUID
+
 from pydantic import BaseModel, ConfigDict, field_validator
 
 UNIDADES    = Literal["unidad", "gramo", "libra", "kilo", "caja", "bulto", "kg", "litro", "metro"]

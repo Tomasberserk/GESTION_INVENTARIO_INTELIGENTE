@@ -1,4 +1,3 @@
-from datetime import datetime, timezone
 import uuid
 
 import jwt
@@ -31,10 +30,10 @@ def get_current_user(
         # Convertir string UUID a UUID object para comparación correcta
         try:
             user_id_uuid = uuid.UUID(user_id)
-        except (ValueError, TypeError):
-            raise _no_autenticado
-    except jwt.InvalidTokenError:
-        raise _no_autenticado
+        except (ValueError, TypeError) as exc:
+            raise _no_autenticado from exc
+    except jwt.InvalidTokenError as exc:
+        raise _no_autenticado from exc
 
     usuario = db.query(models.Usuario).filter(
         models.Usuario.id == user_id_uuid,

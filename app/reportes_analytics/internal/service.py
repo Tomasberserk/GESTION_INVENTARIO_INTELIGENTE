@@ -1,6 +1,5 @@
 """Internal read projections for reportes_analytics."""
 from uuid import UUID
-from sqlalchemy.orm import Session
 
 from app.pos_ventas.api.facade import VentasFacade
 from app.reportes_analytics.api.contracts import DailyMetricsDTO

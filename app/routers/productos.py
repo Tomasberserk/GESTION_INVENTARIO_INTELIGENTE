@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
+from fastapi import APIRouter, Depends, File, Query, UploadFile, status
 from sqlalchemy.orm import Session
 
 from app import models
@@ -9,7 +9,6 @@ from app.dependencies import get_current_user, get_current_user_admin
 from app.schemas.producto import (
     InventarioAdminRespuesta,
     InventarioCajeroRespuesta,
-    InventarioRespuesta,
     ProductoActualizar,
     ProductoAdminOut,
     ProductoCajeroOut,

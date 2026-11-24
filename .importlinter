@@ -97,3 +97,19 @@ forbidden_modules =
     app.soporte_crm
     app.agente_ia
     app.reportes_analytics
+
+# ---------------------------------------------------------------------------
+# Contrato 7: Las partes internas de reportes_analytics son estrictamente privadas
+# ---------------------------------------------------------------------------
+[importlinter:contract:reportes-analytics-internals-are-private]
+name = Modulos externos acceden a reportes_analytics solo via api
+type = forbidden
+allow_indirect_imports = True
+source_modules =
+    app.auth_tenancy
+    app.inventario
+    app.pos_ventas
+    app.soporte_crm
+    app.agente_ia
+forbidden_modules =
+    app.reportes_analytics.internal

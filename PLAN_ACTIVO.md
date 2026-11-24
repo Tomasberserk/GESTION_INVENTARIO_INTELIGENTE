@@ -7,8 +7,8 @@ se descartó la dependencia bloqueante de video en el Hero y se implementó el s
 en vivo `LiveDemoPos.jsx` con tres ganchos conductuales (fuga invisible, sorteo en tickets y programa Comercio Hermano).
 El frontend compila limpio y sin errores (`vite build` exitoso).
 
-> Este documento es **mutable por Claude y Gemini**. Ver `AGENTS.md` para el protocolo de cambios.
-> Usa `> [GEMINI PROPONE]` o `> [CLAUDE PROPONE]` para proponer cambios sin implementarlos aún.
+> Este documento es **mutable por Antigravity y Gemini**. Ver `AGENTS.md` para el protocolo de cambios.
+> Usa `> [GEMINI PROPONE]` o `> [ANTIGRAVITY PROPONE]` para proponer cambios sin implementarlos aún.
 
 ---
 
@@ -33,7 +33,13 @@ El frontend compila limpio y sin errores (`vite build` exitoso).
 [✅] Sprint 10 — Landing Premium Dark-First: Live Ledger POS + 3 Ganchos Conductuales (COMPLETO)
 [ ] Sprint 9 — Despliegue y Activación en Producción (SIGUIENTE)
 [ ] Sprint 10.5 — Redefinición de Alcance: SaaS vertical microempresarial + Modo Lite "Solo Stock" (DECISIÓN DEL DUEÑO — detalla tras el landing)
+[ ] Sprint 11 — Módulo Móvil Flutter: Escaneo Enriquecido Anti-Fricción y POS Offline-First (PROPUESTA GEMINI)
 ```
+
+> [GEMINI PROPONE] Sprint 11 — Módulo Móvil Flutter: Escaneo Enriquecido Anti-Fricción y POS Offline-First
+> **Motivo:** El frontend web móvil actual presenta alta fricción en onboarding (4-5 horas para digitar 300 productos manualmente) y vulnerabilidad operativa ante caídas de red o cortes de luz en tiendas de barrio.
+> **Propuesta:** Desarrollar app móvil nativa en Flutter (APK liviano) con base local SQLite (`drift`), escaneo ML Kit on-device, catálogo maestro Top 10k Colombia offline y motor Outbox de sincronización con idempotencia en FastAPI. Ver especificación detallada en `docs/spec/PROPUESTA_ARQUITECTURA_FLUTTER_OFFLINE_FIRST.md` y `05-architecture/decisions/records/ADR-005-flutter-offline-first-mobile.md`.
+> **Impacto:** Reduce el tiempo de registro por producto de 45s a 3s (onboarding de 200 productos en 12 minutos), permite ventas ininterrumpidas sin internet y mantiene costo cero en APIs externas.
 
 ---
 
@@ -955,3 +961,212 @@ teclado + LCP), YA que el guion usa las tomas reales. Luego QA1 (Gemini) del lan
   - **Gancho 3 (Comercio Hermano):** Sección de referidos con recompensa de 2 meses gratis de GIN Pro por cada nuevo comercio colega que active plan de pago.
 - **Verificación Técnica:** `npm run build` ejecutado en `frontend/` completado con éxito en 38.92 segundos, 0 errores, chunks optimizados (LandingPage bundle en 63.48 kB).
 - **Siguiente paso:** Sprint 9 (Despliegue y Activación en Producción).
+
+---
+
+> [GEMINI PROPONE] Plan de estabilización MVP y gobernanza modular
+> **Fecha de propuesta:** 2026-11-21 · **Referencia completa:** `docs/audits/PLAN_RECUPERACION_MVP_GEMINI.md` · **Bitácora:** `docs/IA_BITACORA.md`
+> **Motivo:** La auditoría técnica del 2026-11-21 (`docs/audits/INFORME_AUDITORIA_MVP_2026-11-21.html`) emitió dictamen *No conforme para defender como monolito modular verificado* debido a 2 hallazgos críticos (`DAT-03`: 4 FKs cruzadas hacia `empresas.id`; `ARC-03`/`ARC-08`: tráfico HTTP sigue entrando por `app/routers` y `app/services` heredados) y 5 hallazgos mayores (`.venv` copiado con Python 3.13.2, cobertura 80%/90% ausente en `requirements.txt` y CI, contrato faltante en `.importlinter`, pipeline CI incompleto, observabilidad/móvil 48px sin certificar).
+> **Decisión estratégica aplicada:** Estabilización por capas (`evidencia reproducible → web móvil → DAT-03 → rutas por fachadas → sustentación`). **Fuera de alcance:** Flutter/offline-first (`ADR-005`) y nuevas funcionalidades. Ninguna tarea está marcada como completada hasta ejecutar y verificar su comando de salida en entorno limpio.
+>
+> ### Sprint 0 — Entorno reproducible y compuertas de calidad
+> - [ ] **S0-1 — Saneamiento de árbol Git:**
+>   - **Objetivo:** Resguardar `frontend/dist/index.html` y definir política limpia de archivos sin confirmar antes de estabilizar.
+>   - **Archivo / área afectada:** `.gitignore`, `frontend/dist/index.html`.
+>   - **Dependencia:** Ninguna.
+>   - **Riesgo:** Bajo (pérdida de cambios locales no respaldados si se descartan sin revisar).
+>   - **Comando exacto de verificación:** `git status --short`
+>   - **Criterio de salida medible:** Árbol Git sin artefactos de build sucios ni cambios accidentales.
+> - [x] **S0-2 — Recreación de `.venv` reproducible en Python 3.12:**
+>   - **Objetivo:** Eliminar `.venv` heredado de `GESTION_NEIVA_CLAUDE` (Python 3.13.2) y recrearlo desde `GESTION_INVENTARIO_INTELIGENTE` con Python 3.12.
+>   - **Archivo / área afectada:** `.venv/`, `requirements.txt`.
+>   - **Dependencia:** S0-1.
+>   - **Riesgo:** Medio (requiere intérprete Python 3.12 disponible en la máquina).
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\python.exe --version && .\.venv\Scripts\python.exe -c "import sys; print(sys.prefix)"`
+>   - **Criterio de salida medible:** `Python 3.12.x` y `sys.prefix` apuntando a `...\GESTION_INVENTARIO_INTELIGENTE\.venv`.
+>   - **Evidencia verificada (2026-11-21 17:48):** `.venv` respaldado en `..\GESTION_INVENTARIO_INTELIGENTE_venv_bak_20261121`; nuevo `.venv` creado con `Python 3.12.13`; `sys.prefix = C:\Users\merid\Documents\GESTION_INVENTARIO_INTELIGENTE\.venv`; `pip install -r requirements.txt` y `pip check` exit `0`; `pytest 7.4.3` recolectó `94 tests collected in 2.47s`.
+> - [x] **S0-3 — Dependencias de cobertura y compatibilidad QA:**
+>   - **Objetivo:** Declarar `pytest-cov` en `requirements.txt` y verificar compatibilidad de `httpx`/`pytest`/`import-linter`/`ruff`.
+>   - **Archivo / área afectada:** `requirements.txt`.
+>   - **Dependencia:** S0-2.
+>   - **Riesgo:** Medio (cambio de versión de `httpx` puede impactar fixtures de `TestClient`).
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\pytest.exe --help | Select-String "cov-fail-under"`
+>   - **Criterio de salida medible:** `--cov` y `--cov-fail-under` reconocidos por `pytest` con exit code `0`.
+>   - **Evidencia verificada (2026-11-21 18:09):** RED previo confirmado (`pytest tests --cov=app --collect-only -q` → exit `4`, `unrecognized arguments: --cov=app`); añadido únicamente `pytest-cov==6.3.0` (`coverage==7.17.4`) a `requirements.txt` (compatible con `pytest==7.4.3`); `pip install -r requirements.txt` y `pip check` exit `0` (`No broken requirements found.`); `pytest --help` reconoce `--cov`, `--cov-report` y `--cov-fail-under`; `pytest tests --cov=app --collect-only -q` recolectó `94 tests collected in 1.65s` (exit `0`); `ruff 0.17.6` e `import-linter 2.17` operativos. Advertencia `StarletteDeprecationWarning` (`httpx` vs `httpx2`) registrada sin cambiar versiones hasta confirmar comportamiento real en S1-1.
+> - [x] **S0-4 — Contrato faltante de `reportes_analytics` en `.importlinter`:**
+>   - **Objetivo:** Agregar contrato `reportes-analytics-internals-are-private` y ejecutar `lint-imports` localmente.
+>   - **Archivo / área afectada:** `.importlinter`.
+>   - **Dependencia:** S0-2.
+>   - **Riesgo:** Bajo (puede revelar importaciones internas existentes que deban limpiarse).
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\lint-imports.exe`
+>   - **Criterio de salida medible:** Exit code `0` con 7/7 contratos `KEPT`.
+>   - **Evidencia verificada (2026-11-21 18:20):** Línea base previa `6 kept, 0 broken`; `rg -n "app\.reportes_analytics\.internal" app tests` devolvió únicamente `app\reportes_analytics\api\facade.py:5`; añadido contrato `reportes-analytics-internals-are-private` en `.importlinter`; `.\.venv\Scripts\lint-imports.exe` → `Analyzed 84 files, 143 dependencies. Contracts: 7 kept, 0 broken.` (exit `0`); `git diff --check` exit `0`. Reglas `app.routers -> app.services/*.internal` diferidas a S4-4.
+> - [x] **S0-5 — Línea base real de lint y build frontend:**
+>   - **Objetivo:** Ejecutar `ruff`, `compileall`, pruebas de voz FSM y `vite build` en árbol limpio y archivar evidencia.
+>   - **Archivo / área afectada:** `ruff.toml`, `app/`, `tests/`, `frontend/`.
+>   - **Dependencia:** S0-3, S0-4.
+>   - **Riesgo:** Medio (errores preexistentes de `ruff` en `app/`).
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\ruff.exe check app && .\.venv\Scripts\python.exe -m compileall -q app tests && cd frontend && npm run test:voice && npm run build -- --outDir <TEMP_GUID>`
+>   - **Criterio de salida medible:** Exit code `0` en todos los comandos y log fechado en bitácora.
+>   - **Evidencia verificada (2026-11-21 18:25–18:32):** Creado `ruff.toml` (`target-version = "py312"`, `select = ["E4", "E7", "E9", "F", "I", "B"]`, `B008` ignorado únicamente en `app/routers/*.py`, `app/dependencies.py` y `app/main.py`). Línea base previa: `53` errores (`32 I001`, `12 F401`, `4 F841`, `3 B904`, `1 E741`, `1 F541`); `46` corregidos con `--fix` seguro (sin `--unsafe-fixes`, revisado diff y validado `configure_mappers()`), `6` corregidos manualmente (`3 B904`, `2 F841`, `1 E741`). Verificaciones finales: `ruff check app` → `All checks passed!` (exit `0`), `compileall -q app tests` (exit `0`), `pytest tests --collect-only -q` → `94 tests collected in 0.30s` (exit `0`), `lint-imports` → `7 kept, 0 broken` (exit `0`), `git diff --check` (exit `0`). Frontend ya verificado sin tocar `frontend/dist/index.html`: `npm run test:voice` `4/4` (exit `0`), `vite build` (exit `0`, `21.65s`) en `C:\Users\merid\AppData\Local\Temp\gestion-inventario-s0-5-1549f21f-d576-42c2-895c-58c19bef17b3`. Familias `UP`, `BLE`, `SIM`, `TRY`, `ASYNC` y similares quedan deliberadamente fuera de la base inicial para evaluación posterior.
+> - [ ] **S0-6 — Alineación inicial del workflow CI (división propuesta abajo; no marcado completado):**
+>   - **Objetivo:** Incorporar `ruff check app`, artefactos de cobertura XML/HTML, servicio PostgreSQL para migraciones y stage `package` (`docker build`) en `.github/workflows/ci.yml`.
+>   - **Archivo / área afectada:** `.github/workflows/ci.yml`.
+>   - **Dependencia:** S0-3, S0-4.
+>   - **Riesgo:** Medio (bloqueo temporal si se activa umbral 80%/90% antes de Sprint 1).
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\python.exe -c "import yaml; yaml.safe_load(open('.github/workflows/ci.yml'))"` + corrida en GitHub Actions.
+>   - **Criterio de salida medible:** YAML válido y workflow CI verde generando `coverage.xml` e imagen Docker.
+>
+> > [ANTIGRAVITY PROPONE] Dividir S0-6 en etapas verificables sin inventar infraestructura prematura
+> > **Motivo:** Alinear primero el CI de calidad y artefactos de cobertura sobre la infraestructura real existente, separando PostgreSQL/migraciones y empaquetado/despliegue en sus hitos respectivos.
+> > - [ ] **S0-6A — CI de calidad y artefactos de cobertura:** `.github/workflows/ci.yml` actualizado con `ruff check app`, `python -m compileall -q app tests`, `lint-imports`, `pytest tests/ -q --cov=app --cov-report=xml --cov-report=term-missing` (sin `--cov-fail-under` hasta S1-5), subida de `coverage.xml` con `if: always()`, `python run_e2e_simulation.py` separado (SQLite, sin afirmar PostgreSQL ni concurrencia real) y `npm ci` en frontend. **Condición exacta para marcar `[x]`:** una ejecución verde real en GitHub Actions tras un commit autorizado.
+> > - [ ] **S1-3 / S3-3 — PostgreSQL, migraciones y rollback en CI:** Servicio PostgreSQL de prueba, ejecución `alembic upgrade head → downgrade -1 → upgrade head` y pruebas de concurrencia/aislamiento reales.
+> > - [ ] **DEV-03 — Docker, release y despliegue documentado:** Etapa `package` (`docker build`), triggers de release y alineación verificable con `10-devops/ci-cd.md`.
+>
+> ### Sprint 1 — Recorrido tendero y cobertura
+> - [ ] **S1-1 — Desbloqueo integral de la suite `pytest`:**
+>   - **Objetivo:** Ejecutar las 94+ pruebas recolectadas en `.venv` Python 3.12 y corregir el hang de `TestClient`/`anyio` en Windows si persiste.
+>   - **Archivo / área afectada:** `tests/conftest.py`, `tests/`.
+>   - **Dependencia:** S0-2, S0-3.
+>   - **Riesgo:** Alto (bloquea toda certificación automatizada backend).
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\pytest.exe tests/ -q`
+>   - **Criterio de salida medible:** 100% de pruebas críticas pasan sin bloqueos ni timeouts.
+> - [ ] **S1-2 — Recorrido tendero E2E completo:**
+>   - **Objetivo:** Ampliar `test_store_journey_e2e.py` para cubrir registro → login (`/api/v1/token`) → crear producto → venta → descuento de stock verificado → dashboard → soporte → logout / rechazo 401 sin token.
+>   - **Archivo / área afectada:** `tests/end_to_end/test_store_journey_e2e.py`.
+>   - **Dependencia:** S1-1.
+>   - **Riesgo:** Bajo (sujeto a decisión humana sobre endpoint `/logout` vs limpieza client-side).
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\pytest.exe tests/end_to_end/test_store_journey_e2e.py -v && .\.venv\Scripts\python.exe run_e2e_simulation.py`
+>   - **Criterio de salida medible:** 100% de pasos del recorrido tendero verificados con exit code `0`.
+> - [ ] **S1-3 — Concurrencia e integración en PostgreSQL real:**
+>   - **Objetivo:** Verificar migraciones `001`..`013` y suite de concurrencia `SELECT ... FOR UPDATE` contra PostgreSQL de prueba.
+>   - **Archivo / área afectada:** `tests/integration/postgres/test_concurrencia_postgres.py`.
+>   - **Dependencia:** S1-1.
+>   - **Riesgo:** Medio (requiere contenedor PostgreSQL de prueba activo).
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\alembic.exe upgrade head && .\.venv\Scripts\pytest.exe tests/integration/postgres/ -v`
+>   - **Criterio de salida medible:** 100% de pruebas de concurrencia PostgreSQL en verde con stock final `>= 0`.
+> - [ ] **S1-4 — Alineación ADR-003 en checkout (`venta_service` / `inventario`):**
+>   - **Objetivo:** Ordenar `data.detalles` determinísticamente por `producto_id` antes de `with_for_update()` y alinear HTTP status de stock insuficiente (`400` vs `422`) según decisión humana.
+>   - **Archivo / área afectada:** `app/services/venta_service.py`, `app/inventario/internal/service.py`, `tests/`.
+>   - **Dependencia:** S1-1 y decisión humana sobre código HTTP `422`.
+>   - **Riesgo:** Medio (posible ajuste de aserciones HTTP en tests existentes).
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\pytest.exe tests/test_concurrencia_real.py tests/module_integration/ -v`
+>   - **Criterio de salida medible:** 0 deadlocks en pruebas concurrentes y contrato HTTP consistente con ADR-003.
+> - [ ] **S1-5 — Cierre de brechas de cobertura `>=80%` global y `>=90%` en `pos_ventas`:**
+>   - **Objetivo:** Añadir tests unitarios e integración faltantes y activar las dos compuertas bloqueantes en CI.
+>   - **Archivo / área afectada:** `tests/unit/`, `tests/module_integration/`, `.github/workflows/ci.yml`.
+>   - **Dependencia:** S1-2, S1-4.
+>   - **Riesgo:** Medio (archivos grandes en `app/services/agente/` pueden requerir cobertura adicional).
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\pytest.exe tests/ --cov=app --cov-report=xml --cov-report=term-missing --cov-fail-under=80 && .\.venv\Scripts\pytest.exe tests/ --cov=app/pos_ventas --cov-fail-under=90`
+>   - **Criterio de salida medible:** Cobertura global `>= 80%`, `app/pos_ventas >= 90%`, artefacto `coverage.xml` generado.
+>
+> ### Sprint 2 — Web móvil responsive
+> - [ ] **S2-1 — Corrección de objetivos táctiles `>=48 px` en vistas públicas:**
+>   - **Objetivo:** Subir enlace "Crear cuenta" (44 px) e inputs de login/registro (45 px) a altura mínima `48 px` sin scroll horizontal a 360 px.
+>   - **Archivo / área afectada:** `frontend/src/pages/LandingPage.jsx`, `Login.jsx`, `Registro.jsx`, `frontend/src/styles/landing.css`.
+>   - **Dependencia:** S0-5.
+>   - **Riesgo:** Bajo (desajuste menor de alineación en header móvil).
+>   - **Comando exacto de verificación:** `cd frontend && npm run build` + medición automatizada DOM a `360x800`.
+>   - **Criterio de salida medible:** `scrollWidth <= 360` y todos los CTA/inputs públicos con altura `>= 48 px`.
+> - [ ] **S2-2 — Responsividad `360 px` en shell y flujo POS (`Layout`, `Header`, `Sidebar`, `CartSidebar`, `Ventas`):**
+>   - **Objetivo:** Garantizar 0 desbordamiento horizontal y controles táctiles `>= 48 × 48 px` en navegación, carrito y ventas.
+>   - **Archivo / área afectada:** `frontend/src/components/layout/*`, `CartSidebar.jsx`, `pages/Ventas.jsx`.
+>   - **Dependencia:** S2-1.
+>   - **Riesgo:** Medio (colisiones de z-index con `AgentWidget`/`MostradorMode`).
+>   - **Comando exacto de verificación:** `cd frontend && npm run test:voice && npm run build`
+>   - **Criterio de salida medible:** `scrollWidth <= 360`, botones táctiles `>= 48 px` y FSM voz 4/4 pasando.
+> - [ ] **S2-3 — Responsividad `360 px` en catálogo, alertas y soporte (`Inventario`, `ModalProducto`, `Dashboard`, `Soporte`):**
+>   - **Objetivo:** Evitar overflow en tarjetas, modales y gráficas Recharts y asegurar controles `>= 48 px` incluyendo estados vacío/carga/error.
+>   - **Archivo / área afectada:** `frontend/src/pages/Inventario.jsx`, `Dashboard.jsx`, `Soporte.jsx`, `components/ProductoCard.jsx`, `ModalProducto.jsx`.
+>   - **Dependencia:** S2-1.
+>   - **Riesgo:** Medio (gráficas o tablas anchas en pantallas de 360 px).
+>   - **Comando exacto de verificación:** `cd frontend && npm run build` + verificación Playwright a `360x800`.
+>   - **Criterio de salida medible:** `scrollWidth <= 360` en todas las pantallas autenticadas y controles `>= 48 px`.
+> - [ ] **S2-4 — Prueba automatizada de viewport `360 px` y auditoría Lighthouse:**
+>   - **Objetivo:** Crear spec automatizado de breakpoint `360 × 800` sobre el recorrido tendero y ejecutar Lighthouse móvil.
+>   - **Archivo / área afectada:** `frontend/tests/mobile/` (o `tests/end_to_end/`), `docs/IA_BITACORA.md`.
+>   - **Dependencia:** S1-2, S2-2, S2-3.
+>   - **Riesgo:** Medio (flakiness si el entorno local backend/frontend no arranca determinísticamente).
+>   - **Comando exacto de verificación:** Ejecución del spec Playwright `360x800` + Lighthouse CLI sobre `vite preview`.
+>   - **Criterio de salida medible:** 0 px scroll horizontal, targets `>= 48 px` y accesibilidad Lighthouse `>= 90`.
+>
+> ### Sprint 3 — DAT-03: aislamiento de tenancy mediante UUID + fachadas
+> - [ ] **S3-1 — Redacción de `ADR-006` sin editar ADRs aceptados (`001`–`004`):**
+>   - **Objetivo:** Documentar formalmente el desacople de las 4 FKs cruzadas de `empresa_id` mediante UUID indexados y validación vía `AuthTenancyFacade`.
+>   - **Archivo / área afectada:** `05-architecture/decisions/records/ADR-006-aislamiento-tenancy-uuid-fachadas.md`, `05-architecture/decisions/README.md`.
+>   - **Dependencia:** Aprobación humana de numeración ADR-006.
+>   - **Riesgo:** Bajo.
+>   - **Comando exacto de verificación:** `git diff 05-architecture/decisions/records/ADR-001* 05-architecture/decisions/records/ADR-002* 05-architecture/decisions/records/ADR-003* 05-architecture/decisions/records/ADR-004*`
+>   - **Criterio de salida medible:** 0 cambios en ADR-001..004 y `ADR-006` indexado en `decisions/README.md`.
+> - [ ] **S3-2 — Desacople ORM y retiro de cascades cruzados en `app/models.py`:**
+>   - **Objetivo:** Quitar `ForeignKey("empresas.id")` en `Producto`, `Venta`, `SoporteTicket`, `AgentCommand`; retirar las 4 relaciones `cascade="all, delete-orphan"` en `Empresa` y sus contrapartes `.empresa`; marcar `viewonly=True` en relaciones cruzadas heredadas de migración 013; conservar intactas las 3 FKs internas.
+>   - **Archivo / área afectada:** `app/models.py`.
+>   - **Dependencia:** S3-1, S1-1.
+>   - **Riesgo:** Alto (`NoForeignKeysError` en SQLAlchemy o impacto en `joinedload`/tests de modelos).
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\pytest.exe tests/test_fase1_rbac_modelos.py tests/unit/ -v`
+>   - **Criterio de salida medible:** Mappers ORM cargan sin error; `Base.metadata` contiene exactamente 3 FKs internas y 0 FKs cruzadas.
+> - [ ] **S3-3 — Migración reversible `014_desacoplar_fks_tenancy_empresa_id.py`:**
+>   - **Objetivo:** Eliminar en PostgreSQL las 4 FKs cruzadas hacia `empresas.id` con drop defensivo, garantizar índices sobre `empresa_id` y restaurar todo en `downgrade()`.
+>   - **Archivo / área afectada:** `alembic/versions/014_desacoplar_fks_tenancy_empresa_id.py`.
+>   - **Dependencia:** S3-2.
+>   - **Riesgo:** Alto (constraints sin nombre explícito en migraciones 006 y 010).
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\alembic.exe upgrade head && .\.venv\Scripts\alembic.exe downgrade -1 && .\.venv\Scripts\alembic.exe upgrade head`
+>   - **Criterio de salida medible:** `upgrade → downgrade → upgrade` salen con código `0` y `pg_constraint` reporta 0 FKs cruzadas y 3 internas.
+> - [ ] **S3-4 — Validación de tenant activo por `AuthTenancyFacade` en escrituras cross-module:**
+>   - **Objetivo:** Reemplazar queries directas a `models.Empresa` y blindar escrituras en `inventario`, `pos_ventas`, `soporte_crm`, `agente_ia` y `dependencies.py` invocando `AuthTenancyFacade.ensure_active_company()`.
+>   - **Archivo / área afectada:** `app/services/producto_service.py`, `venta_service.py`, `app/routers/soporte.py`, `app/services/agente/agent_orchestrator.py`, `app/dependencies.py`.
+>   - **Dependencia:** S3-2.
+>   - **Riesgo:** Alto (afecta todas las escrituras de negocio y dependencias JWT).
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\pytest.exe tests/ -q`
+>   - **Criterio de salida medible:** 100% de suite pasa y toda escritura con `empresa_id` inexistente o inactiva responde `404`/`403`.
+> - [ ] **S3-5 — Suite de pruebas de aislamiento DAT-03, rollback y sincronización documental:**
+>   - **Objetivo:** Crear tests de esquema, aislamiento por fachada, FKs internas intactas y rollback de migración 014; actualizar `02-domain/module-boundaries.md` y `06-data/*`.
+>   - **Archivo / área afectada:** `tests/module_integration/test_dat03_tenancy_isolation.py`, `tests/integration/postgres/test_migration_014_rollback.py`, `02-domain/module-boundaries.md`, `06-data/*`.
+>   - **Dependencia:** S3-3, S3-4.
+>   - **Riesgo:** Medio (requiere PostgreSQL de prueba).
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\pytest.exe tests/module_integration/test_dat03_tenancy_isolation.py tests/integration/postgres/test_migration_014_rollback.py -v`
+>   - **Criterio de salida medible:** 100% de pruebas DAT-03 y rollback en verde; docs `06-data/` sincronizadas a migración 014.
+>
+> ### Sprint 4 — Rutas por fachadas y cierre de sustentación
+> - [ ] **S4-1 — Migración de routers `auth`, `empresas` y `usuarios` a `AuthTenancyFacade`:**
+>   - **Objetivo:** Enrutar los endpoints de identidad/tenancy/RBAC exclusivamente por `AuthTenancyFacade` moviendo lógica interna a `app/auth_tenancy/internal/`.
+>   - **Archivo / área afectada:** `app/auth_tenancy/*`, `app/routers/auth.py`, `empresas.py`, `usuarios.py`.
+>   - **Dependencia:** S3-5.
+>   - **Riesgo:** Medio (regresión en registro, login, trial o límite de cajeros).
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\pytest.exe tests/test_auth.py tests/test_entitlements_trial.py tests/test_fase2_backend_rbac.py tests/test_owasp_security.py -v`
+>   - **Criterio de salida medible:** 100% de tests pasan y 0 imports de `app.services` en los 3 routers.
+> - [ ] **S4-2 — Migración de routers `productos` y `ventas` a `InventarioFacade` y `VentasFacade`:**
+>   - **Objetivo:** Eliminar bypass hacia `app/services/producto_service.py` y `venta_service.py` y quitar la delegación inversa desde `app/pos_ventas/internal/service.py`.
+>   - **Archivo / área afectada:** `app/inventario/*`, `app/pos_ventas/*`, `app/routers/productos.py`, `ventas.py`.
+>   - **Dependencia:** S4-1.
+>   - **Riesgo:** Alto (núcleo transaccional POS y umbral de cobertura `>=90%`).
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\pytest.exe tests/ --cov=app/pos_ventas --cov-fail-under=90`
+>   - **Criterio de salida medible:** 100% de tests pasan, `app/pos_ventas >= 90%` y 0 imports de `app.services` en `productos.py` y `ventas.py`.
+> - [ ] **S4-3 — Migración de routers `soporte`, `superadmin`, `agente`, `dashboard` y `reportes` a sus fachadas:**
+>   - **Objetivo:** Implementar `ReportesFacade` real (reemplazando stub `_ = VentasFacade`) y enrutar los 5 routers restantes por `SoporteCrmFacade`, `AuthTenancyFacade`, `AgenteIaFacade` y `ReportesFacade`.
+>   - **Archivo / área afectada:** `app/soporte_crm/*`, `app/agente_ia/*`, `app/reportes_analytics/*`, `app/routers/soporte.py`, `superadmin.py`, `agente.py`, `dashboard.py`, `reportes.py`.
+>   - **Dependencia:** S4-2.
+>   - **Riesgo:** Alto (`agente_ia` tiene 280 casos de benchmark y 13+ pruebas adversariales).
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\pytest.exe tests/test_soporte_crm.py tests/test_agente_produccion.py tests/test_agente_rbac_reabastecer.py tests/test_business_understanding_benchmark.py -v`
+>   - **Criterio de salida medible:** 100% verde; 0 queries SQLAlchemy directas ni imports de `app.services` en `app/routers/`.
+> - [ ] **S4-4 — Blindaje de `.importlinter` y demo deliberada de violación:**
+>   - **Objetivo:** Prohibir en `.importlinter` que `app.routers` importe `app.*.internal` o `app.services`; probar fallo deliberado, revertir y archivar evidencia.
+>   - **Archivo / área afectada:** `.importlinter`, `docs/IA_BITACORA.md`.
+>   - **Dependencia:** S4-3.
+>   - **Riesgo:** Bajo.
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\lint-imports.exe`
+>   - **Criterio de salida medible:** 0 violaciones en estado final y log guardado de la infracción deliberada bloqueada.
+> - [ ] **S4-5 — Cierre de `OBS-02`/`OBS-03` y `DEV-01`/`DEV-03`:**
+>   - **Objetivo:** Alinear métricas mínimas y política `HEALTH_REQUIRE_REDIS` entre `app/main.py` y `13-operations/observability.md`, y alinear `.github/workflows/ci.yml` con `10-devops/ci-cd.md`.
+>   - **Archivo / área afectada:** `app/main.py`, `13-operations/observability.md`, `.github/workflows/ci.yml`, `10-devops/ci-cd.md`.
+>   - **Dependencia:** S4-3 y decisión humana sobre observabilidad/Redis.
+>   - **Riesgo:** Bajo.
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\pytest.exe tests/ -q --cov=app --cov-fail-under=80` + revisión de corrida CI completa.
+>   - **Criterio de salida medible:** Pipeline `lint → boundary-check → test (80%/90%) → package → deploy documentado` en verde y 0 discrepancias en `/health`/observabilidad.
+> - [ ] **S4-6 — Cierre documental (`DOC-12`) y paquete final de sustentación:**
+>   - **Objetivo:** Actualizar `00-sdd-guide.md`, `07-api/README.md` (migraciones `001-014`, OpenAPI `3.1.0`, ADRs `001-006`) y consolidar evidencia reproducible (cobertura XML/HTML, logs CI, migraciones, captura móvil 360 px y Locust si aplica).
+>   - **Archivo / área afectada:** `00-sdd-guide.md`, `07-api/README.md`, `docs/IA_BITACORA.md`.
+>   - **Dependencia:** S4-4, S4-5.
+>   - **Riesgo:** Bajo.
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\ruff.exe check app && .\.venv\Scripts\lint-imports.exe && .\.venv\Scripts\pytest.exe tests/ --cov=app --cov-fail-under=80 && .\.venv\Scripts\pytest.exe tests/ --cov=app/pos_ventas --cov-fail-under=90`
+>   - **Criterio de salida medible:** 0 hallazgos críticos abiertos y 100% de las 9 métricas de salida verificadas con artefacto fechado.

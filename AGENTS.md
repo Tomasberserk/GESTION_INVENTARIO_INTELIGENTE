@@ -1,7 +1,7 @@
-# AGENTS.md — Protocolo de colaboración Claude + Gemini
+# AGENTS.md — Protocolo de colaboración Antigravity + Gemini
 
 > Documento vivo. Ambos AIs pueden proponer cambios marcándolos con  
-> `> [CLAUDE PROPONE]` o `> [GEMINI PROPONE]` + justificación.
+> `> [ANTIGRAVITY PROPONE]` o `> [GEMINI PROPONE]` + justificación.
 
 ---
 
@@ -11,16 +11,16 @@ Este proyecto tiene dos IAs trabajando como co-autores:
 
 | Agente | Dónde vive | Fortaleza principal |
 |--------|-----------|---------------------|
-| **Claude** (Sonnet/Opus/Haiku) | Claude Code en Codespaces | Implementación, arquitectura, ejecución de comandos |
+| **Antigravity** | Editor Antigravity | Implementación, arquitectura, ejecución de comandos |
 | **Gemini** | Antigravity editor (editor de código con integración Gemini nativa) | Análisis de codebase grande, QA, review, propuestas de plan |
 
-Ninguno es el jefe del otro. Gemini no solo sigue órdenes de Claude — puede proponer cambios al plan, señalar problemas, y agregar valor desde su perspectiva.
+Ninguno es el jefe del otro. Gemini no solo sigue órdenes de Antigravity — puede proponer cambios al plan, señalar problemas, y agregar valor desde su perspectiva.
 
 ---
 
 ## 2. División de responsabilidades
 
-### Claude hace
+### Antigravity hace
 
 - Escribe código y lo ejecuta (Bash, Edit, Write)
 - Toma decisiones de arquitectura cuando hay trade-offs de implementación
@@ -46,7 +46,7 @@ Ninguno es el jefe del otro. Gemini no solo sigue órdenes de Claude — puede p
 
 ## 3. Cómo proponer cambios al plan
 
-Si Gemini o Claude quiere proponer un cambio en `PLAN_ACTIVO.md`:
+Si Gemini o Antigravity quiere proponer un cambio en `PLAN_ACTIVO.md`:
 
 1. Agregar el bloque al archivo con el marcador correspondiente:
 
@@ -72,7 +72,7 @@ Paso 1  [Gemini]    Requirements → JSON estructurado
         Input: documento del cliente (texto libre)
         Output: factory/jobs/{sistema}/requirements.json
 
-Paso 2  [Architect/Claude Sonnet]  Schema DB + contratos API
+Paso 2  [Architect/Antigravity]  Schema DB + contratos API
         Input: requirements.json
         Output: factory/jobs/{sistema}/schema.md + api-contracts.md
 
@@ -84,7 +84,7 @@ Paso 4  [Haiku Worker ×3]  Routers + services
         Input: api-contracts.md + models.py
         Output: routers/, services/
 
-Paso 5  [Claude Sonnet]  Frontend
+Paso 5  [Antigravity]  Frontend
         Input: api-contracts.md + components-list.md del tier
         Output: pages/, components/, hooks/
 
@@ -103,18 +103,18 @@ Paso 8  [Haiku Worker]  DevOps
 
 ---
 
-## 5. Cuándo usar cada modelo Claude
+## 5. Cuándo usar Antigravity
 
 | Tarea | Modelo recomendado | Por qué |
 |-------|-------------------|---------|
-| Diseño de schema DB | Sonnet o Opus | Requiere razonamiento profundo sobre relaciones |
-| Contratos API | Sonnet | Trade-offs de diseño REST |
-| Schemas Pydantic | Haiku | Boilerplate predecible, barato |
-| Migraciones Alembic | Haiku | Plantilla estándar |
-| Routers FastAPI simples | Haiku | CRUD predecible |
-| Lógica de negocio compleja | Sonnet | Necesita entender edge cases |
-| Componentes React UI | Sonnet | Interacción de estado, UX |
-| Tests unitarios | Haiku | Estructura predecible |
+| Diseño de schema DB | Antigravity | Requiere razonamiento profundo sobre relaciones |
+| Contratos API | Antigravity | Trade-offs de diseño REST |
+| Schemas Pydantic | Antigravity | Boilerplate predecible |
+| Migraciones Alembic | Antigravity | Plantilla estándar |
+| Routers FastAPI simples | Antigravity | CRUD predecible |
+| Lógica de negocio compleja | Antigravity | Necesita entender edge cases |
+| Componentes React UI | Antigravity | Interacción de estado, UX |
+| Tests unitarios | Antigravity | Estructura predecible |
 | Review de sistema completo | Gemini | 1M tokens, gratis |
 | Análisis de requirements | Gemini | Lectura de documentos largos |
 
@@ -122,12 +122,19 @@ Paso 8  [Haiku Worker]  DevOps
 
 ## 6. Convenciones de comunicación entre sesiones
 
-Dado que Claude y Gemini no comparten memoria en tiempo real, la coordinación se hace via archivos commiteados:
+Dado que Antigravity y Gemini no comparten memoria en tiempo real, la coordinación se hace via archivos commiteados:
 
 - `PLAN_ACTIVO.md` — estado del sprint activo y siguientes tareas
 - `AGENTS.md` — este archivo (protocolo de coordinación)
 - `factory/jobs/{sistema}/` — estado de cada sistema en construcción
 - `git log` — historial de lo que cada AI implementó
+
+### Ciclo de vida de `PLAN_ACTIVO.md` y evidencia de IA
+
+- `PLAN_ACTIVO.md` contiene únicamente el trabajo vigente y sus verificaciones; no es el informe que se entrega como evidencia final.
+- Al cerrar un sprint, se conserva una copia fechada del plan y de sus evidencias en `docs/audits/planes-cerrados/`, y se registra la intervención de IA en `docs/IA_BITACORA.md`.
+- Solo después de archivar esa evidencia se retira el bloque cerrado de `PLAN_ACTIVO.md` o se reemplaza por un enlace al archivo archivado. No se borran evidencias ni se reescribe el historial Git para ocultar el uso de IA.
+- La presentación académica debe usar el informe y la bitácora requeridos por la institución; la transparencia sobre IA se conserva en su documento específico.
 
 **Regla:** Al final de cada sesión de trabajo, el AI que actuó debe:
 1. Actualizar `PLAN_ACTIVO.md` con lo que completó
@@ -140,9 +147,9 @@ Dado que Claude y Gemini no comparten memoria en tiempo real, la coordinación s
 
 Para evitar el "token burn" y garantizar código robusto, ambos agentes deben adherirse a esta metodología manual:
 
-1. **Cero código sin diseño previo (Brainstorming):** Nunca empezar a escribir archivos sin antes tener un plan en `PLAN_ACTIVO.md`. Gemini hace el rol de estructurar el diseño; Claude lo implementa.
+1. **Cero código sin diseño previo (Brainstorming):** Nunca empezar a escribir archivos sin antes tener un plan en `PLAN_ACTIVO.md`. Gemini hace el rol de estructurar el diseño; Antigravity lo implementa.
 2. **Micro-tareas:** Los pasos en `PLAN_ACTIVO.md` deben ser tareas diminutas y atómicas (no "crear módulo de ventas", sino "crear endpoint POST /ventas").
-3. **Verificación Explícita (Verification Before Completion):** Todo paso en `PLAN_ACTIVO.md` debe incluir un comando de verificación exacto. Claude *no puede* marcar un paso como ✅ sin antes haber ejecutado ese comando y visto el resultado exitoso.
+3. **Verificación Explícita (Verification Before Completion):** Todo paso en `PLAN_ACTIVO.md` debe incluir un comando de verificación exacto. Antigravity *no puede* marcar un paso como ✅ sin antes haber ejecutado ese comando y visto el resultado exitoso.
 4. **TDD pragmático (Test-Driven Development):** Siempre que sea posible, escribir el test unitario *antes* que la implementación. Si el proyecto aún no tiene tests formales, la prueba manual (ej: `curl`, script en python, o test por consola) debe fallar primero, y luego pasar al escribir la función.
 
 ---
@@ -151,6 +158,6 @@ Para evitar el "token burn" y garantizar código robusto, ambos agentes deben ad
 
 - **Hermes-3 (Together AI):** BLOQUEADO hasta primer ingreso del sistema
 - **Ollama local:** descartado — degrada rendimiento del equipo de forma exponencial
-- **Stack actual:** Claude (Opus/Sonnet/Haiku) + Gemini (free tier). Cero APIs pagas adicionales.
+- **Stack actual:** Antigravity + Gemini (free tier). Cero APIs pagas adicionales.
 
 Cuando Gestión Neiva genere su primera factura real, se activa Hermes-3 para el tier professional.

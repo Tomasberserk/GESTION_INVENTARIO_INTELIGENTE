@@ -4,7 +4,7 @@ Todas las métricas son calculadas directamente por SQLAlchemy y PostgreSQL/SQLi
 garantizando exactitud matemática, respeto a las fechas UTC y aislamiento multi-tenant.
 """
 
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from typing import Any
 from uuid import UUID

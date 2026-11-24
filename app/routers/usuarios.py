@@ -1,5 +1,6 @@
-from uuid import UUID
 from typing import List
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 

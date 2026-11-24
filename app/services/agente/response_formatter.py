@@ -46,7 +46,7 @@ def formatear_confirmacion_reabastecer(preview: dict[str, Any]) -> str:
     venta_actual = preview.get("precio_venta_actual")
 
     lineas = [
-        f"Voy a registrar el siguiente reabastecimiento:",
+        "Voy a registrar el siguiente reabastecimiento:",
         f"• Producto: {nom}",
         f"• Entrada: +{cant} {unidad} (Stock pasará de {stock_actual} a {nuevo_stock} {unidad})",
     ]

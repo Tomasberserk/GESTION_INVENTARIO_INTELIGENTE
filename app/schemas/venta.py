@@ -1,7 +1,8 @@
-from uuid import UUID
 from datetime import datetime
 from decimal import Decimal
 from typing import List, Optional
+from uuid import UUID
+
 from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
 

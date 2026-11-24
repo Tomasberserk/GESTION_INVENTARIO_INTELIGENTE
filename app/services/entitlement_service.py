@@ -3,10 +3,10 @@ Fuente única de verdad para el cálculo de estado del trial (15 días) y acceso
 """
 
 import math
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
-from app import models
 
+from app import models
 
 DURACION_TRIAL_DIAS = 15
 

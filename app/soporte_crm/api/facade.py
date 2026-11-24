@@ -1,5 +1,6 @@
 """Public facade for soporte_crm bounded context."""
 from uuid import UUID
+
 from sqlalchemy.orm import Session
 
 from app.soporte_crm.api.contracts import TicketSummaryDTO

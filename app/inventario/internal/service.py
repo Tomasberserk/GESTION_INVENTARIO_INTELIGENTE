@@ -1,6 +1,7 @@
 """Internal domain operations for product locking and stock management."""
 from decimal import Decimal
 from uuid import UUID
+
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 

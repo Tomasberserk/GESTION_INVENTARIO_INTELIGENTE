@@ -1,5 +1,6 @@
 """Internal domain queries and operations for auth_tenancy."""
 from uuid import UUID
+
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 

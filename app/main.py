@@ -11,7 +11,10 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.core.logging import get_correlation_id
-from app.core.security_middleware import CorrelationIdMiddleware, SecurityHeadersMiddleware
+from app.core.security_middleware import (
+    CorrelationIdMiddleware,
+    SecurityHeadersMiddleware,
+)
 from app.database import get_db
 from app.routers import (
     agente,

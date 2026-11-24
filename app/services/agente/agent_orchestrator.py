@@ -18,7 +18,7 @@ from decimal import Decimal
 from typing import Any
 from uuid import UUID
 
-from fastapi import HTTPException, status
+from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -802,7 +802,6 @@ class AgentOrchestrator:
             }
 
         # 2. Caso: Registrar Venta o Reabastecer
-        query = slots.get("product_query")
         producto_id = slots.get("producto_id")
 
         # Resolver producto si ya está resuelto en slots
@@ -1078,7 +1077,6 @@ class AgentOrchestrator:
         command_id = pending["command_id"]
         action = pending["action"]
         payload = pending["payload"]
-        preview = pending.get("preview", {})
 
         # 1. Comprobar si el command_id ya existe (Idempotencia en PostgreSQL)
         cmd_existente = (
