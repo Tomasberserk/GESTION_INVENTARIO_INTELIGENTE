@@ -442,3 +442,169 @@ Move-Item -Path ".venv" -Destination "..\GESTION_INVENTARIO_INTELIGENTE_venv_bak
 - `.venv/`, `.venvpython/`, respaldos locales y `.env` (no leído).
 
 > **La IA asistió en ejecución controlada y documentación; las decisiones y validación final corresponden al equipo humano.**
+
+
+---
+
+## Sesión 2026-11-25 17:24 — Cierre verificado de S0-6A (Evidencia GitHub Actions Run #45298915524)
+
+| Campo | Detalle |
+|---|---|
+| **Fecha y hora local** | 2026-11-25 17:24 (`-05:00`, America/Bogota) |
+| **Herramienta / Modelo** | Antigravity (rol ejecutor técnico) · Gemini 4 Neon |
+| **Repositorio** | `C:\Users\merid\Documents\GESTION_INVENTARIO_INTELIGENTE` |
+| **Tarea cerrada** | `S0-6A` — marcada como `[x]` en `PLAN_ACTIVO.md` (cero cambios de código; `S0-6` general, `S1-3/S3-3` y `DEV-03` permanecen `[ ]`) |
+
+### Evidencia verificada de GitHub Actions
+
+- **Commit:** `8f200c1` (`8f200c14868e730c8150323c2e0e9ca4cab6ac21`, `chore(quality): establish sprint 0 quality gates`)
+- **Workflow / Run:** `CI Pipeline — Monolith Governance & QA` · Run `#45298915524` (`https://github.com/Tomasberserk/GESTION_INVENTARIO_INTELIGENTE/actions/runs/45298915524`)
+- **Estado final:** **`completed / success`** (`2026-11-24T00:39:20Z` → `00:40:47Z`)
+- **Jobs:**
+  - `Lint, Boundary Check & Backend Tests` (`job/138126211730`): **`success`** (`ruff check app` → `All checks passed!`, `compileall` ✅, `lint-imports` → `Contracts: 7 kept, 0 broken.`).
+  - `Frontend Voice FSM Tests & Production Build` (`job/138126211469`): **`success`** (`npm ci` ✅, `npm run test:voice` ✅, `npm run build` ✅).
+- **Artefacto:** `backend-coverage-xml` (`id: 14877682399`, `9,176 bytes`, `expired: false`, generado `2026-11-24T00:40:40Z`).
+- **Resultados Pytest + Cobertura en CI:** `82 passed, 12 skipped, 7 warnings in 40.63s`; cobertura global `app/` = **`79%`** (`3,297` statements, `681` missed); `app/pos_ventas/` = **`100%`** (`30/30` statements).
+- **E2E SQLite (`run_e2e_simulation.py`):** `ALL END-TO-END (E2E) TESTS PASSED SUCCESSFULLY! (100% OK)`.
+
+> **La IA asistió en verificación controlada y documentación; las decisiones y validación final corresponden al equipo humano.**
+
+
+---
+
+## Sesión 2026-11-25 17:24 — Ejecución S1-1 (Diagnóstico local de suite completa, skips de CI y brechas de cobertura)
+
+| Campo | Detalle |
+|---|---|
+| **Fecha y hora local** | 2026-11-25 17:24–17:27 (`-05:00`, America/Bogota) |
+| **Herramienta / Modelo** | Antigravity (rol ejecutor técnico) · Gemini 4 Neon |
+| **Repositorio** | `C:\Users\merid\Documents\GESTION_INVENTARIO_INTELIGENTE` |
+| **Entorno verificado** | `.venv` `Python 3.12.13` · `pytest 7.4.3` · PostgreSQL local activo (`localhost:5432/gestion_neiva_test`) |
+| **Tarea ejecutada** | `S1-1` — marcada como `[x]` en `PLAN_ACTIVO.md` (suite completa sin hang/crash y 12 skips auditados) |
+| **Restricciones respetadas** | Cero cambios a código, tests, dependencias, CI, migraciones ni frontend; sin commit ni push; `.env` no leído. |
+
+### 1. Comandos ejecutados y resultados locales vs CI
+
+| Comando | Entorno | Passed | Failed | Skipped | Warnings | Tiempo | Cobertura `app/` | Exit |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| `.\.venv\Scripts\pytest.exe tests -q -rs --maxfail=1` | Local `.venv` (Py 3.12.13 + PG local) | **94** | 0 | **0** | 7 | `56.84s` | n/a | `0` |
+| `.\.venv\Scripts\pytest.exe tests --cov=app --cov-report=term-missing -q -rs --maxfail=1` | Local `.venv` (Py 3.12.13 + PG local) | **94** | 0 | **0** | 7 | `65.05s` | **`80%`** *(exacto `79.74%`, `668/3297` miss)* | `0` |
+| `pytest tests/ -q --cov=app ...` (Run `#45298915524`) | CI GitHub Actions (Py 3.12 + SQLite) | **82** | 0 | **12** | 7 | `40.63s` | **`79%`** *(exacto `79.34%`, `681/3297` miss)* | `0` |
+
+- **Hang de `TestClient` / `AnyIO`:** **NO reapareció.** Resuelto al reemplazar el `.venv` corrupto de Python `3.13.2` por `.venv` limpio Python `3.12.13`.
+- **Warnings (7 en local y CI):** 1× `StarletteDeprecationWarning` (`httpx` vs `httpx2` en `TestClient`, sin fallo) y 6× `StarletteDeprecationWarning` (`HTTP_422_UNPROCESSABLE_ENTITY` deprecado en favor de `HTTP_422_UNPROCESSABLE_CONTENT`).
+- **Alerta QA sobre `--cov-fail-under=80`:** Aunque la tabla redondea `79.74%` a `80%` en local, `pytest-cov` compara el valor exacto (`79.74% < 80.0%` en local y `79.34% < 80.0%` en CI); faltan al menos `9` statements en local (`22` en CI) para superar `80.00%` real (se cerrará en `S1-5`).
+
+### 2. Auditoría y clasificación de los 12 `skipped` de CI
+
+Todos los **12** tests saltados en CI pasaron (`12/12`) en local con PostgreSQL vivo y se clasifican uniformemente como **esperado por SQLite / ausencia de servicio PostgreSQL en CI** (pendiente `S1-3 / S3-3`):
+
+1. `tests/integration/postgres/test_concurrencia_postgres.py` (**5 tests**, `pytestmark = skipif(not PG_ALIVE)`): `test_postgres_concurrencia_dos_confirmaciones_mismo_command_id`, `test_postgres_concurrencia_dos_ventas_compitiendo_stock_uno`, `test_postgres_kernel_row_lock_select_for_update_demostracion`, `test_postgres_concurrencia_reabastecimiento_sin_lost_update`, `test_postgres_directa_integrity_violation_command_id`.
+2. `tests/test_adversarial_break_system.py` (**3 tests**, `@pytest.mark.skipif(not PG_ALIVE)`): `test_ataque_concurrente_hilos_ultimo_cupo_cajero`, `test_ataque_concurrente_hilos_sobreventa_stock_uno`, `test_ataque_carrera_creacion_vs_reactivacion_postgres`.
+3. `tests/test_concurrencia_real.py` (**3 tests**, `if not PG_AVAILABLE: pytest.skip(...)`): `test_concurrencia_dos_confirmaciones_mismo_command_id`, `test_concurrencia_dos_ventas_compitiendo_stock_uno`, `test_concurrencia_reabastecimiento_lost_update`.
+4. `tests/test_fase2_backend_rbac.py` (**1 test**, `pytest.skip(...)` al fallar conexión PG): `test_concurrencia_creacion_cajeros_limite_tres_con_barrier`.
+
+### 3. Módulos con mayor brecha de cobertura (base local `3,297` stmts / `668` miss)
+
+- **Mayor impacto absoluto en statements sin cubrir:** `app/services/agente/intent_provider.py` (`120` miss, `73%`), `app/services/agente/agent_orchestrator.py` (`85` miss, `83%`), `app/services/agente/session_store.py` (`49` miss, `47%`), `app/services/agente/response_formatter.py` (`40` miss, `85%`), `app/services/producto_service.py` (`36` miss, `67%`), `app/routers/agente.py` (`35` miss, `55%`), `app/routers/reportes.py` (`32` miss, `36%`), `app/routers/superadmin.py` (`29` miss, `57%`), `app/services/auth_service.py` (`25` miss, `68%`).
+- **Módulos en `0%`:** `app/agente_ia/*` (`24` miss), `app/reportes_analytics/*` (`23` miss), `app/core/config.py` (`11` miss), `app/platform/{config,database,middleware}` (`7` miss).
+- **Otros bajo `80%`:** `app/schemas/empresa.py` (`19` miss, `57%`), `app/services/empresa_service.py` (`13` miss, `35%`), `app/routers/soporte.py` (`11` miss, `79%`), `app/routers/empresas.py` (`9` miss, `67%`), `app/database.py` (`8` miss, `69%`), `app/platform/security/__init__.py` (`5` miss, `69%`).
+- **`pos_ventas`:** `app/pos_ventas/` = `100%` (`30/30`); `app/services/venta_service.py` = `83%` local (`10` miss) / `80%` CI (`12` miss).
+
+> **La IA asistió en ejecución controlada, análisis y documentación; las decisiones y validación final corresponden al equipo humano.**
+
+
+---
+
+## Sesión 2026-11-25 17:38 — Ejecución S1-2 (Ampliación del recorrido E2E del tendero y verificación de logout stateless)
+
+| Campo | Detalle |
+|---|---|
+| **Fecha y hora local** | 2026-11-25 17:35–17:38 (`-05:00`, America/Bogota) |
+| **Herramienta / Modelo** | Antigravity (rol ejecutor técnico) · Gemini 4 Neon |
+| **Repositorio** | `C:\Users\merid\Documents\GESTION_INVENTARIO_INTELIGENTE` |
+| **Entorno verificado** | `.venv` `Python 3.12.13` · `pytest 7.4.3` · `pytest-cov 6.3.0` · PostgreSQL local activo |
+| **Tarea ejecutada** | `S1-2` — marcada como `[x]` en `PLAN_ACTIVO.md` |
+| **Archivos modificados** | Únicamente `tests/end_to_end/test_store_journey_e2e.py`, `PLAN_ACTIVO.md` y `docs/IA_BITACORA.md` |
+| **Restricciones respetadas** | Sin cambios en código de producción (`app/`), frontend, dependencias, CI, migraciones, modelos ni fachadas; sin `POST /logout`; sin commit ni push; `.env` no leído. |
+
+### 1. Decisión de arquitectura aplicada (Logout JWT stateless)
+
+- **No se creó ni se modificó ningún endpoint `POST /logout`.**
+- El esquema JWT del sistema es **stateless**: en el frontend (`frontend/src/services/authService.js`, líneas 81–83), `logout()` ejecuta `this.clearToken()` (`localStorage.removeItem('access_token')`).
+- La evidencia backend de sesión cerrada es que una ruta protegida (`GET /api/v1/me`) responde **`401 Unauthorized`** cuando se invoca sin encabezado `Authorization`.
+
+### 2. Recorrido E2E exigido en `tests/end_to_end/test_store_journey_e2e.py`
+
+Se amplió `test_complete_store_e2e_journey_v1(client)` con TDD pragmático para validar de punta a punta los 10 pasos exactos:
+- `a.` `POST /api/v1/auth/registro-completo` → `201` (captura `empresa_id` y `usuario_id`, sin reutilizar el token de registro).
+- `b.` `POST /api/v1/token` con `email` y `password` → `200`.
+- `c.` Uso exclusivo del `access_token` devuelto por login (`token_type == "bearer"`).
+- `d.` `GET /api/v1/me` con ese token → `200` y verificación de `id`, `email`, `empresa_id` y `rol`.
+- `e.` `POST /api/v1/productos` (`Panela Huilense 1kg`, `cantidad_actual: 25.0`, `precio_venta: 4500.0`) → `201`.
+- `f.` `POST /api/v1/ventas/{empresa_id}` (`cantidad: 4.0`) → `201` y `total == 18000.0`.
+- `g.` `GET /api/v1/productos/{producto_id}` → `200` y stock reducido verificado: `25.0 - 4.0 = 21.0`.
+- `h.` `GET /api/v1/dashboard/{empresa_id}` → `200`, `ventas_hoy == 1`, `ingresos_hoy == 18000.0`.
+- `i.` Simulación de logout stateless eliminando headers (`headers = {}`).
+- `j.` `GET /api/v1/me` sin `Authorization` → `401`.
+
+### 3. Comandos ejecutados y resultados
+
+| Comando | Resultado | Tiempo | Exit |
+|---|---|---:|---:|
+| `.\.venv\Scripts\pytest.exe tests/end_to_end/test_store_journey_e2e.py -v` | **`1 passed, 1 warning`** | `1.00s` | `0` |
+| `.\.venv\Scripts\pytest.exe tests -q -rs --maxfail=1` | **`94 passed, 0 failed, 0 skipped, 7 warnings`** | `60.69s` | `0` |
+| `.\.venv\Scripts\pytest.exe tests --cov=app --cov-report=term-missing -q -rs --maxfail=1` | **`94 passed, 0 failed, 0 skipped, 7 warnings`** | `65.78s` | `0` |
+| `git diff --check` | Limpio (solo avisos LF/CRLF de Git) | n/a | `0` |
+
+### 4. Cobertura observada (antes vs después de S1-2)
+
+- **Antes (S1-1, local `.venv` Py 3.12.13):** `3,297` statements, `668` miss → **`80%`** redondeado (**`79.74%`** exacto).
+- **Después (S1-2, local `.venv` Py 3.12.13):** `3,297` statements, `668` miss → **`80%`** redondeado (**`79.74%`** exacto).
+- **Delta:** `0` statements (esperado: los endpoints `/token`, `/me` y `/productos/{id}` ya eran ejercitados por tests unitarios/integración; S1-2 cierra la garantía contractual del recorrido completo en una sola sesión E2E). `app/pos_ventas/` se mantiene en `100%` (`30/30`).
+
+> **La IA asistió en ejecución controlada y documentación; las decisiones y validación final corresponden al equipo humano.**
+
+
+---
+
+## Sesión 2026-11-25 17:45 — Ejecución S1-3A (Preparación y verificación PostgreSQL real local + CI)
+
+| Campo | Detalle |
+|---|---|
+| **Fecha y hora local** | 2026-11-25 17:42–17:45 (`-05:00`, America/Bogota) |
+| **Herramienta / Modelo** | Antigravity (rol ejecutor técnico) · Gemini 4 Neon |
+| **Repositorio** | `C:\Users\merid\Documents\GESTION_INVENTARIO_INTELIGENTE` |
+| **Entorno local verificado** | `.venv` `Python 3.12.13` · `PostgreSQL 18.3` en `localhost:5432` · base confirmada `gestion_neiva_test` (usuario `postgres`) |
+| **Tarea ejecutada** | `S1-3A` — **S1-3 permanece `[ ]`** en `PLAN_ACTIVO.md` hasta confirmar corrida verde en GitHub Actions |
+| **Archivos modificados** | Únicamente `.github/workflows/ci.yml`, `PLAN_ACTIVO.md` y `docs/IA_BITACORA.md` |
+| **Restricciones respetadas** | Sin cambios en producción, modelos, fachadas, migraciones existentes, frontend, dependencias, `Dockerfile`, `docker-compose.yml` ni `.gitignore`; sin downgrade/re-upgrade (reservado a `S3-3`); `.env` no leído; sin commit ni push. |
+
+### 1. Verificación local de base de pruebas y migraciones Alembic
+
+- **Conexión verificada sin leer `.env`:** `postgresql://postgres:postgres@localhost:5432/gestion_neiva_test` → `current_database() = 'gestion_neiva_test'`, `current_user = 'postgres'`.
+- **`alembic current` (antes):** `012` (exit `0`).
+- **`alembic upgrade head`:** `Running upgrade 012 -> 013, desacoplar_fks_entre_modulos` (exit `0`).
+- **`alembic current` (después):** **`013 (head)`** (exit `0`).
+
+### 2. Pruebas locales con PostgreSQL real (`TEST_POSTGRES_URL`)
+
+| Comando | Ejecutadas | Passed | Failed | Skipped | Warnings | Tiempo | Exit |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `.\.venv\Scripts\pytest.exe tests/integration/postgres/ -v` | **5** | **5** | 0 | **0** | 1 | `2.32s` | `0` |
+| `.\.venv\Scripts\pytest.exe tests -q -rs --maxfail=1` | **94** | **94** | 0 | **0** | 7 | `57.13s` | `0` |
+
+### 3. Cambios aplicados en `.github/workflows/ci.yml`
+
+- Servicio `postgres` añadido al job `backend-and-governance`: `postgres:16-alpine`, `POSTGRES_USER: postgres`, `POSTGRES_PASSWORD: postgres`, `POSTGRES_DB: gestion_neiva_test`, puerto `5432:5432` y healthcheck `pg_isready -U postgres -d gestion_neiva_test`.
+- Nueva etapa `Stage 4 — PostgreSQL Migrations (Alembic 001..013)` previa a `pytest`: ejecuta `alembic upgrade head` y `alembic current` con `DATABASE_URL="postgresql://postgres:postgres@localhost:5432/gestion_neiva_test"` (sin downgrade todavía).
+- Etapa `Stage 5 — Backend Test Suite & Coverage Report`: conserva `DATABASE_URL="sqlite:///:memory:"`, agrega `TEST_POSTGRES_URL="postgresql://postgres:postgres@localhost:5432/gestion_neiva_test"` para habilitar las 12 pruebas PostgreSQL y conserva cobertura sin umbral (`--cov-fail-under` diferido a `S1-5`).
+- Validación YAML vía `yaml.safe_load` en `.venv`: **`YAML_VALID=True`**.
+
+### 4. Condición pendiente para cerrar `S1-3`
+
+- Ejecutar commit selectivo + push (cuando sea autorizado) y verificar una corrida verde real en GitHub Actions donde:
+  1. `alembic upgrade head` aplique limpiamente `001`→`013` sobre `postgres:16-alpine` vacío y `alembic current` confirme `013 (head)`.
+  2. La suite de backend ejecute **94 pruebas passed** con **0 skipped por PostgreSQL**.
+
+> **La IA asistió en ejecución controlada y documentación; las decisiones y validación final corresponden al equipo humano.**

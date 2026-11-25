@@ -1019,32 +1019,35 @@ teclado + LCP), YA que el guion usa las tomas reales. Luego QA1 (Gemini) del lan
 >
 > > [ANTIGRAVITY PROPONE] Dividir S0-6 en etapas verificables sin inventar infraestructura prematura
 > > **Motivo:** Alinear primero el CI de calidad y artefactos de cobertura sobre la infraestructura real existente, separando PostgreSQL/migraciones y empaquetado/despliegue en sus hitos respectivos.
-> > - [ ] **S0-6A — CI de calidad y artefactos de cobertura:** `.github/workflows/ci.yml` actualizado con `ruff check app`, `python -m compileall -q app tests`, `lint-imports`, `pytest tests/ -q --cov=app --cov-report=xml --cov-report=term-missing` (sin `--cov-fail-under` hasta S1-5), subida de `coverage.xml` con `if: always()`, `python run_e2e_simulation.py` separado (SQLite, sin afirmar PostgreSQL ni concurrencia real) y `npm ci` en frontend. **Condición exacta para marcar `[x]`:** una ejecución verde real en GitHub Actions tras un commit autorizado.
+> > - [x] **S0-6A — CI de calidad y artefactos de cobertura:** `.github/workflows/ci.yml` actualizado con `ruff check app`, `python -m compileall -q app tests`, `lint-imports`, `pytest tests/ -q --cov=app --cov-report=xml --cov-report=term-missing` (sin `--cov-fail-under` hasta S1-5), subida de `coverage.xml` con `if: always()`, `python run_e2e_simulation.py` separado (SQLite, sin afirmar PostgreSQL ni concurrencia real) y `npm ci` en frontend. **Evidencia verificada (2026-11-24 / 2026-11-25):** commit `8f200c1`, GitHub Actions Run `#45298915524` (`success`), jobs backend (`138126211730`) y frontend (`138126211469`) verdes, artefacto `backend-coverage-xml` (`id: 14877682399`, `9,176 bytes`), `82 passed, 12 skipped, 7 warnings`, cobertura global `79%`, `pos_ventas` `100%`, E2E SQLite (`run_e2e_simulation.py`) en verde.
 > > - [ ] **S1-3 / S3-3 — PostgreSQL, migraciones y rollback en CI:** Servicio PostgreSQL de prueba, ejecución `alembic upgrade head → downgrade -1 → upgrade head` y pruebas de concurrencia/aislamiento reales.
 > > - [ ] **DEV-03 — Docker, release y despliegue documentado:** Etapa `package` (`docker build`), triggers de release y alineación verificable con `10-devops/ci-cd.md`.
 >
 > ### Sprint 1 — Recorrido tendero y cobertura
-> - [ ] **S1-1 — Desbloqueo integral de la suite `pytest`:**
+> - [x] **S1-1 — Desbloqueo integral de la suite `pytest`:**
 >   - **Objetivo:** Ejecutar las 94+ pruebas recolectadas en `.venv` Python 3.12 y corregir el hang de `TestClient`/`anyio` en Windows si persiste.
 >   - **Archivo / área afectada:** `tests/conftest.py`, `tests/`.
 >   - **Dependencia:** S0-2, S0-3.
 >   - **Riesgo:** Alto (bloquea toda certificación automatizada backend).
 >   - **Comando exacto de verificación:** `.\.venv\Scripts\pytest.exe tests/ -q`
 >   - **Criterio de salida medible:** 100% de pruebas críticas pasan sin bloqueos ni timeouts.
-> - [ ] **S1-2 — Recorrido tendero E2E completo:**
->   - **Objetivo:** Ampliar `test_store_journey_e2e.py` para cubrir registro → login (`/api/v1/token`) → crear producto → venta → descuento de stock verificado → dashboard → soporte → logout / rechazo 401 sin token.
+>   - **Evidencia verificada (2026-11-25 17:27):** En `.venv` Python `3.12.13` (`pytest 7.4.3`), el hang de `TestClient`/`AnyIO` **no reapareció**. `pytest tests -q -rs --maxfail=1` → **`94 passed, 0 failed, 0 skipped, 7 warnings in 56.84s`** (exit `0`); `pytest tests --cov=app --cov-report=term-missing -q -rs --maxfail=1` → **`94 passed, 7 warnings in 65.05s`** (exit `0`), cobertura local `app/` = `80%` redondeado (`79.74%` exacto, `3,297` stmts, `668` miss; `app/pos_ventas/` = `100%`, `app/services/venta_service.py` = `83%`). Los 12 `skipped` de CI (Run `#45298915524`: `82 passed, 12 skipped`, `79%`) fueron auditados y corresponden 100% a pruebas de concurrencia/locking con guard `PostgreSQL` (5 en `test_concurrencia_postgres.py`, 3 en `test_adversarial_break_system.py`, 3 en `test_concurrencia_real.py`, 1 en `test_fase2_backend_rbac.py`), clasificados como **esperado por SQLite en CI** hasta `S1-3/S3-3`. Cero cambios de código requeridos.
+> - [x] **S1-2 — Recorrido tendero E2E completo:**
+>   - **Objetivo:** Ampliar `test_store_journey_e2e.py` para cubrir registro → login (`/api/v1/token`) → `/api/v1/me` → crear producto → venta → descuento de stock verificado (`25 - 4 = 21`) → dashboard (`1` venta, `18.000`) → logout stateless (limpieza de headers cliente) → rechazo `401` sin `Authorization`.
 >   - **Archivo / área afectada:** `tests/end_to_end/test_store_journey_e2e.py`.
 >   - **Dependencia:** S1-1.
->   - **Riesgo:** Bajo (sujeto a decisión humana sobre endpoint `/logout` vs limpieza client-side).
->   - **Comando exacto de verificación:** `.\.venv\Scripts\pytest.exe tests/end_to_end/test_store_journey_e2e.py -v && .\.venv\Scripts\python.exe run_e2e_simulation.py`
+>   - **Riesgo:** Bajo (decisión de arquitectura vigente: no crear `POST /logout`; JWT stateless; logout = eliminar token cliente).
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\pytest.exe tests/end_to_end/test_store_journey_e2e.py -v` + `.\.venv\Scripts\pytest.exe tests -q -rs --maxfail=1`
 >   - **Criterio de salida medible:** 100% de pasos del recorrido tendero verificados con exit code `0`.
+>   - **Evidencia verificada (2026-11-25 17:38):** `test_complete_store_e2e_journey_v1` ampliado con los pasos `a`–`j` (usando el `access_token` del login real `POST /api/v1/token`, no el de registro; `GET /api/v1/me` validado; stock `25.0 - 4.0 = 21.0` verificado vía `GET /api/v1/productos/{id}`; logout stateless eliminando headers y `GET /api/v1/me` → `401`). Sin endpoint `POST /logout` ni cambios en código de producción. E2E aislado: **`1 passed, 1 warning in 1.00s`** (exit `0`). Suite completa: **`94 passed, 0 failed, 0 skipped, 7 warnings in 60.69s`** (exit `0`); con cobertura: **`94 passed, 7 warnings in 65.78s`**, cobertura local `app/` = `80%` redondeado (`79.74%` exacto, `3,297` stmts, `668` miss — sin cambio vs S1-1). `git diff --check` exit `0`. *(Nota: `run_e2e_simulation.py` no fue re-ejecutado en esta microtarea; su última corrida verde verificada fue en CI Run `#45298915524`.)*
 > - [ ] **S1-3 — Concurrencia e integración en PostgreSQL real:**
 >   - **Objetivo:** Verificar migraciones `001`..`013` y suite de concurrencia `SELECT ... FOR UPDATE` contra PostgreSQL de prueba.
->   - **Archivo / área afectada:** `tests/integration/postgres/test_concurrencia_postgres.py`.
+>   - **Archivo / área afectada:** `tests/integration/postgres/test_concurrencia_postgres.py`, `.github/workflows/ci.yml`.
 >   - **Dependencia:** S1-1.
 >   - **Riesgo:** Medio (requiere contenedor PostgreSQL de prueba activo).
 >   - **Comando exacto de verificación:** `.\.venv\Scripts\alembic.exe upgrade head && .\.venv\Scripts\pytest.exe tests/integration/postgres/ -v`
 >   - **Criterio de salida medible:** 100% de pruebas de concurrencia PostgreSQL en verde con stock final `>= 0`.
+>   - **Avance `S1-3A` (2026-11-25 17:44, permanece `[ ]`):** Verificación local en `gestion_neiva_test` (`PostgreSQL 18.3` local en `localhost:5432`): `alembic current` antes = `012`, `alembic upgrade head` aplicó `012 -> 013 (desacoplar_fks_entre_modulos)`, `alembic current` después = `013 (head)`. Con `TEST_POSTGRES_URL=postgresql://postgres:postgres@localhost:5432/gestion_neiva_test`: `pytest tests/integration/postgres/ -v` → **`5 passed, 1 warning in 2.32s`**; `pytest tests -q -rs --maxfail=1` → **`94 passed, 0 failed, 0 skipped, 7 warnings in 57.13s`**. `.github/workflows/ci.yml` actualizado con servicio `postgres:16-alpine` (`pg_isready`), etapa `alembic upgrade head && alembic current` (sin downgrade, reservado a S3-3) y `TEST_POSTGRES_URL` en `pytest` (YAML validado). **Condición pendiente para marcar `[x]`:** ejecución verde real en GitHub Actions con **94 pruebas ejecutadas, 0 skipped por PostgreSQL y migración `013` confirmada** (y aplicación limpia `001..013` desde base vacía en CI).
 > - [ ] **S1-4 — Alineación ADR-003 en checkout (`venta_service` / `inventario`):**
 >   - **Objetivo:** Ordenar `data.detalles` determinísticamente por `producto_id` antes de `with_for_update()` y alinear HTTP status de stock insuficiente (`400` vs `422`) según decisión humana.
 >   - **Archivo / área afectada:** `app/services/venta_service.py`, `app/inventario/internal/service.py`, `tests/`.

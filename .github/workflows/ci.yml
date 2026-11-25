@@ -10,6 +10,20 @@ jobs:
   backend-and-governance:
     name: Lint, Boundary Check & Backend Tests
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: gestion_neiva_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d gestion_neiva_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -37,9 +51,17 @@ jobs:
         run: |
           lint-imports
 
-      - name: Stage 4 — Backend Test Suite & Coverage Report
+      - name: Stage 4 — PostgreSQL Migrations (Alembic 001..013)
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/gestion_neiva_test"
+        run: |
+          alembic upgrade head
+          alembic current
+
+      - name: Stage 5 — Backend Test Suite & Coverage Report
         env:
           DATABASE_URL: "sqlite:///:memory:"
+          TEST_POSTGRES_URL: "postgresql://postgres:postgres@localhost:5432/gestion_neiva_test"
           SECRET_KEY: "ci-test-secret-key-not-for-production-use-only"
           SUPERADMIN_KEY: "ci-superadmin-test-key"
         run: |
@@ -53,7 +75,7 @@ jobs:
           path: coverage.xml
           if-no-files-found: ignore
 
-      - name: Stage 5 — End-to-End Business Journey Simulation (SQLite)
+      - name: Stage 6 — End-to-End Business Journey Simulation (SQLite)
         env:
           DATABASE_URL: "sqlite:///:memory:"
           SECRET_KEY: "ci-test-secret-key-not-for-production-use-only"
