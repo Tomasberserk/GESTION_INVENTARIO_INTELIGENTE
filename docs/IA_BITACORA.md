@@ -1008,3 +1008,35 @@ Comando: `.\.venv\Scripts\pytest.exe tests/unit/test_domain_unit.py::test_regist
 - **`PLAN_ACTIVO.md`:** sección detallada de Sprint 2 reemplazada por referencia breve al archivo cerrado en `docs/audits/planes-cerrados/`.
 
 > **La IA asistió en la verificación y documentación del cierre de Sprint 2; la validación final corresponde al equipo humano.**
+
+---
+
+## Sesión 2026-11-27 — S3-1: Redacción de `ADR-006` (DAT-03: aislamiento de tenancy, snapshots históricos y no borrado físico)
+
+### Alcance y verificación documental
+
+- **Microtarea:** `S3-1` exclusivamente (sin cambios en `app/`, migraciones `alembic/`, fachadas, routers ni `ADR-001`–`ADR-005`).
+- **Archivos creados / actualizados:**
+  - `05-architecture/decisions/records/ADR-006-aislamiento-tenancy-uuid-fachadas.md`: documenta el desacople de las 4 FKs cruzadas `empresa_id -> empresas.id` (`productos`, `ventas`, `soporte_tickets`, `agent_commands`) mediante UUID indexado + `AuthTenancyFacade`, la conservación de las 3 FKs intra-módulo (`usuarios.empresa_id`, `detalles_venta.venta_id`, `soporte_mensajes.ticket_id`), la auditoría de campos históricos en `detalles_venta` (`precio_unitario`, `cantidad` y `subtotal` ya existentes; `producto_nombre_snapshot` faltante; `codigo_barras`/`unidad_medida` evaluados como opcionales), la política de soft-delete/cierre/archivo y no borrado físico, alternativa descartada de FKs cruzadas, estrategia de reversión de migración `014` y criterios de prueba para `S3-2`–`S3-5`.
+  - `05-architecture/decisions/README.md`: `ADR-006` indexado en la tabla de registros sin alterar `ADR-001`–`ADR-004` ni tocar `ADR-005`.
+  - `PLAN_ACTIVO.md`: `S3-1` marcado como `[x]` con evidencia y comando de validación documental.
+- **Comando de validación documental:** `git diff 05-architecture/decisions/records/ADR-001* 05-architecture/decisions/records/ADR-002* 05-architecture/decisions/records/ADR-003* 05-architecture/decisions/records/ADR-004* 05-architecture/decisions/records/ADR-005* && git diff --check` (0 cambios en `ADR-001`..`ADR-005`, `git diff --check` exit `0`).
+
+> **La IA asistió en la inspección del esquema y redacción de `ADR-006` y documentación asociada; las decisiones arquitectónicas y validación final corresponden al equipo humano.**
+
+---
+
+## Sesión 2026-11-27 — S3-1B: Enmienda aprobada a `ADR-006` (decisiones técnicas previas a `S3-2`)
+
+### Decisiones técnicas con aprobación humana incorporadas (solo documentación)
+
+1. **Retiro total de relaciones ORM cross-module (sin `viewonly=True`):** se elimina la propuesta de mantener relaciones ORM cruzadas con `viewonly=True`; el historial de ventas usará exclusivamente snapshots de `detalles_venta`, sin `joinedload` ni lectura viva de `Producto`.
+2. **Separación explícita de migraciones:**
+   - `014`: retiro reversible de las 4 FKs cruzadas de `empresa_id` e índices de tenancy.
+   - `015`: snapshots históricos, backfill, respuesta de ventas sin `joinedload` e índice único parcial de código de barras en `productos`.
+3. **Snapshots fijos en `detalles_venta`:** `producto_nombre_snapshot`, `producto_codigo_snapshot` y `producto_unidad_snapshot` (sin duplicar `precio_unitario`, `cantidad` ni `subtotal`), distinguiendo compatibilidad `nullable` durante backfill para filas antiguas frente a obligación estricta en ventas nuevas.
+4. **Política de identidad de producto:** un producto inactivo con movimientos históricos no se reactiva ni sobrescribe automáticamente en `crear_producto()`; `015` reemplaza `uq_producto_empresa_barras` por índice único parcial `WHERE is_active = true`; cada creación genera UUID nuevo (cualquier recuperación futura requerirá operación explícita de reactivación).
+5. **Contrato de tenancy anti-enumeración:** `AuthTenancyFacade.ensure_active_company()` conserva **HTTP `404` uniforme** para empresa inexistente o inactiva.
+6. **Validación documental:** `0` modificaciones en `ADR-001`–`ADR-005`, `0` cambios en código/migraciones/pruebas, `git diff --check` exit `0`.
+
+> **La IA asistió en la redacción de la enmienda `S3-1B` y sincronización documental; las decisiones técnicas fueron aprobadas y son validadas por el equipo humano.**

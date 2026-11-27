@@ -1083,34 +1083,35 @@ teclado + LCP), YA que el guion usa las tomas reales. Luego QA1 (Gemini) del lan
 > - **Evidencia de cierre verificada:** commit `2ee5ddc` (`test(mobile): enforce 360px responsive QA in CI`), [GitHub Actions Run `#46019358053`](https://github.com/Tomasberserk/GESTION_INVENTARIO_INTELIGENTE/actions/runs/46019358053) (`completed / success`, ambos jobs en verde), Playwright público `3 passed / 1 skipped` (más recorrido autenticado local `4 passed`), Lighthouse móvil accesibilidad `95/90/90` (`>= 90`) y artefacto descargable `frontend-mobile-qa-evidence` (ID `15206887974`, `355,028 bytes`).
 >
 > ### Sprint 3 — DAT-03: aislamiento de tenancy mediante UUID + fachadas
-> - [ ] **S3-1 — Redacción de `ADR-006` sin editar ADRs aceptados (`001`–`004`):**
->   - **Objetivo:** Documentar formalmente el desacople de las 4 FKs cruzadas de `empresa_id` mediante UUID indexados y validación vía `AuthTenancyFacade`.
+> - [x] **S3-1 — Redacción de `ADR-006` sin editar ADRs aceptados (`001`–`004`):**
+>   - **Objetivo:** Documentar formalmente el desacople de las 4 FKs cruzadas de `empresa_id` mediante UUID indexados y validación vía `AuthTenancyFacade`, la conservación de las 3 FKs intra-módulo, los snapshots históricos de `detalles_venta` y la política de no borrado físico.
 >   - **Archivo / área afectada:** `05-architecture/decisions/records/ADR-006-aislamiento-tenancy-uuid-fachadas.md`, `05-architecture/decisions/README.md`.
 >   - **Dependencia:** Aprobación humana de numeración ADR-006.
 >   - **Riesgo:** Bajo.
->   - **Comando exacto de verificación:** `git diff 05-architecture/decisions/records/ADR-001* 05-architecture/decisions/records/ADR-002* 05-architecture/decisions/records/ADR-003* 05-architecture/decisions/records/ADR-004*`
->   - **Criterio de salida medible:** 0 cambios en ADR-001..004 y `ADR-006` indexado en `decisions/README.md`.
-> - [ ] **S3-2 — Desacople ORM y retiro de cascades cruzados en `app/models.py`:**
->   - **Objetivo:** Quitar `ForeignKey("empresas.id")` en `Producto`, `Venta`, `SoporteTicket`, `AgentCommand`; retirar las 4 relaciones `cascade="all, delete-orphan"` en `Empresa` y sus contrapartes `.empresa`; marcar `viewonly=True` en relaciones cruzadas heredadas de migración 013; conservar intactas las 3 FKs internas.
->   - **Archivo / área afectada:** `app/models.py`.
+>   - **Comando exacto de verificación:** `git diff 05-architecture/decisions/records/ADR-001* 05-architecture/decisions/records/ADR-002* 05-architecture/decisions/records/ADR-003* 05-architecture/decisions/records/ADR-004* 05-architecture/decisions/records/ADR-005* && git diff --check`
+>   - **Criterio de salida medible:** 0 cambios en ADR-001..005 y `ADR-006` indexado en `05-architecture/decisions/README.md`.
+>   - **Evidencia verificada (`S3-1` + enmienda `S3-1B` con aprobación humana, 2026-11-27 — solo documentación):** `ADR-006` creado y enmendado con las 5 decisiones técnicas aprobadas: (1) retiro completo de relaciones ORM cross-module sin `viewonly=True` y lectura del historial de ventas desde snapshots sin `joinedload` a `Producto`; (2) separación explícita de migración `014` (4 FKs cruzadas de `empresa_id` e índices de tenancy) vs migración `015` (snapshots, backfill, respuesta de ventas e índice único parcial de `productos`); (3) snapshots fijos `producto_nombre_snapshot`, `producto_codigo_snapshot` y `producto_unidad_snapshot` en `detalles_venta` sin duplicar `precio_unitario`, `cantidad` ni `subtotal`, distinguiendo compatibilidad de backfill legada vs obligación en ventas nuevas; (4) identidad de producto sin reactivación automática en `crear_producto()`, UUID nuevo y unicidad parcial `WHERE is_active = true`; (5) contrato uniforme `404` en `AuthTenancyFacade.ensure_active_company()` para empresa inexistente o inactiva (anti-enumeración). Indexado en `05-architecture/decisions/README.md`; `0` cambios en `ADR-001`..`ADR-005`; `git diff --check` exit `0`.
+> - [ ] **S3-2 — Desacople ORM y retiro total de relaciones/cascades cross-module en `app/models.py`:**
+>   - **Objetivo:** Quitar `ForeignKey("empresas.id")` en `Producto`, `Venta`, `SoporteTicket`, `AgentCommand`; retirar completamente todas las relaciones ORM cross-module (las 4 `cascade="all, delete-orphan"` en `Empresa` y sus `.empresa`, más las heredadas de `013`, sin `viewonly=True`) y conservar intactas las 3 FKs y relaciones internas.
+>   - **Archivo / área afectada:** `app/models.py` (coordinado con la transición de snapshots `015` para lectura de ventas sin `joinedload`).
 >   - **Dependencia:** S3-1, S1-1.
 >   - **Riesgo:** Alto (`NoForeignKeysError` en SQLAlchemy o impacto en `joinedload`/tests de modelos).
 >   - **Comando exacto de verificación:** `.\.venv\Scripts\pytest.exe tests/test_fase1_rbac_modelos.py tests/unit/ -v`
->   - **Criterio de salida medible:** Mappers ORM cargan sin error; `Base.metadata` contiene exactamente 3 FKs internas y 0 FKs cruzadas.
-> - [ ] **S3-3 — Migración reversible `014_desacoplar_fks_tenancy_empresa_id.py`:**
->   - **Objetivo:** Eliminar en PostgreSQL las 4 FKs cruzadas hacia `empresas.id` con drop defensivo, garantizar índices sobre `empresa_id` y restaurar todo en `downgrade()`.
->   - **Archivo / área afectada:** `alembic/versions/014_desacoplar_fks_tenancy_empresa_id.py`.
+>   - **Criterio de salida medible:** Mappers ORM cargan sin error; `Base.metadata` contiene exactamente 3 FKs internas, 0 FKs cruzadas y 0 relaciones ORM cross-module.
+> - [ ] **S3-3 — Migración reversible `014_desacoplar_fks_tenancy_empresa_id.py` (y `015` para snapshots/unicidad activa):**
+>   - **Objetivo:** En `014`, eliminar en PostgreSQL las 4 FKs cruzadas hacia `empresas.id` con drop defensivo, garantizar índices sobre `empresa_id` y restaurar todo en `downgrade()`; separar en `015` los snapshots de `detalles_venta`, backfill, respuesta de ventas sin `joinedload` e índice único parcial `WHERE is_active = true` en `productos`.
+>   - **Archivo / área afectada:** `alembic/versions/014_desacoplar_fks_tenancy_empresa_id.py` (y futura `alembic/versions/015_*`).
 >   - **Dependencia:** S3-2.
 >   - **Riesgo:** Alto (constraints sin nombre explícito en migraciones 006 y 010).
 >   - **Comando exacto de verificación:** `.\.venv\Scripts\alembic.exe upgrade head && .\.venv\Scripts\alembic.exe downgrade -1 && .\.venv\Scripts\alembic.exe upgrade head`
 >   - **Criterio de salida medible:** `upgrade → downgrade → upgrade` salen con código `0` y `pg_constraint` reporta 0 FKs cruzadas y 3 internas.
 > - [ ] **S3-4 — Validación de tenant activo por `AuthTenancyFacade` en escrituras cross-module:**
->   - **Objetivo:** Reemplazar queries directas a `models.Empresa` y blindar escrituras en `inventario`, `pos_ventas`, `soporte_crm`, `agente_ia` y `dependencies.py` invocando `AuthTenancyFacade.ensure_active_company()`.
+>   - **Objetivo:** Reemplazar queries directas a `models.Empresa` y blindar escrituras en `inventario`, `pos_ventas`, `soporte_crm`, `agente_ia` y `dependencies.py` invocando `AuthTenancyFacade.ensure_active_company()` con contrato `404` uniforme.
 >   - **Archivo / área afectada:** `app/services/producto_service.py`, `venta_service.py`, `app/routers/soporte.py`, `app/services/agente/agent_orchestrator.py`, `app/dependencies.py`.
 >   - **Dependencia:** S3-2.
 >   - **Riesgo:** Alto (afecta todas las escrituras de negocio y dependencias JWT).
 >   - **Comando exacto de verificación:** `.\.venv\Scripts\pytest.exe tests/ -q`
->   - **Criterio de salida medible:** 100% de suite pasa y toda escritura con `empresa_id` inexistente o inactiva responde `404`/`403`.
+>   - **Criterio de salida medible:** 100% de suite pasa y toda escritura con `empresa_id` inexistente o inactiva responde `404` uniforme (sin enumeración de tenants).
 > - [ ] **S3-5 — Suite de pruebas de aislamiento DAT-03, rollback y sincronización documental:**
 >   - **Objetivo:** Crear tests de esquema, aislamiento por fachada, FKs internas intactas y rollback de migración 014; actualizar `02-domain/module-boundaries.md` y `06-data/*`.
 >   - **Archivo / área afectada:** `tests/module_integration/test_dat03_tenancy_isolation.py`, `tests/integration/postgres/test_migration_014_rollback.py`, `02-domain/module-boundaries.md`, `06-data/*`.

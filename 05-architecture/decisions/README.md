@@ -14,6 +14,7 @@ overridden in code; it must be superseded by a new ADR.
 | [ADR-002](./records/ADR-002-aislamiento-multitenant.md) | Aislamiento Multi-Tenant por Discriminador de Fila | Accepted | 2026-09-28 |
 | [ADR-003](./records/ADR-003-concurrencia-inventario-pos.md) | Concurrencia en Inventario POS mediante `SELECT ... FOR UPDATE` | Accepted | 2026-09-28 |
 | [ADR-004](./records/ADR-004-desacople-llaves-foraneas-uuid.md) | Desacople de Llaves Foráneas entre Módulos mediante UUIDs | Accepted | 2026-11-06 |
+| [ADR-006](./records/ADR-006-aislamiento-tenancy-uuid-fachadas.md) | Aislamiento de Tenancy entre Módulos mediante UUID Indexado, Fachadas y Evidencia Histórica Inmutable (DAT-03) | Accepted | 2026-11-27 |
 
 ## Decision lifecycle
 
