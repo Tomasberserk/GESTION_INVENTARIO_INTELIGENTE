@@ -153,22 +153,22 @@ export default function LandingPage() {
           1. NAVEGACIÓN PRINCIPAL
       ───────────────────────────────────────────────────────────── */}
       <header
-        className={`fixed top-0 z-40 transition-[background-color,border-color] duration-200 ${
+        className={`fixed top-0 inset-x-0 z-40 transition-[background-color,border-color] duration-200 ${
           scrolled
             ? 'bg-white/95 backdrop-blur-md border-b border-slate-200/80'
             : 'bg-transparent border-b border-transparent lnd-hd-float'
         }`}
       >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-xl shadow-sm">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 min-h-16 py-2 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-10 h-10 shrink-0 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-xl shadow-sm">
               <Store size={22} />
             </div>
             <div className="min-w-0">
               <span className="lnd-hd-word font-extrabold text-slate-900 text-lg tracking-tight block leading-tight whitespace-nowrap">
                 GIN
               </span>
-              <span className="lnd-hd-sub text-[10px] text-emerald-700 font-medium tracking-wide block whitespace-nowrap">
+              <span className="lnd-hd-sub text-[10px] text-emerald-700 font-medium tracking-wide block truncate">
                 Gestión de Inventario Inteligente
               </span>
             </div>
@@ -201,13 +201,13 @@ export default function LandingPage() {
           <div className="flex items-center gap-3 shrink-0">
             <Link
               to="/login"
-              className="lnd-hd-login hidden sm:inline-block text-sm font-semibold text-slate-700 hover:text-emerald-700 px-3 py-3 rounded-xl transition-colors whitespace-nowrap"
+              className="lnd-hd-login hidden sm:inline-flex items-center min-h-12 text-sm font-semibold text-slate-700 hover:text-emerald-700 px-3 py-3 rounded-xl transition-colors whitespace-nowrap"
             >
               Entrar a mi cuenta
             </Link>
             <Link
               to="/registro"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold px-4 py-3 rounded-xl transition-all shadow-sm active:scale-95 flex items-center gap-1.5 whitespace-nowrap"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold min-h-12 px-4 py-3 rounded-xl transition-all shadow-sm active:scale-95 inline-flex items-center gap-1.5 whitespace-nowrap"
             >
               <span>Crear cuenta</span>
               <ArrowRight size={16} />

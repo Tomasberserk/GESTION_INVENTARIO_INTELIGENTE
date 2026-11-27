@@ -59,17 +59,18 @@ export default function Sidebar({ abierto, onCerrar }) {
         )}
       >
         {/* Cabecera del sidebar */}
-        <div className="h-14 flex items-center justify-between px-6 border-b border-slate-700 shrink-0">
+        <div className="min-h-14 flex items-center justify-between pl-6 pr-2 md:px-6 border-b border-slate-700 shrink-0">
           <span className="text-slate-400 text-xs font-semibold uppercase tracking-widest">
             Menú
           </span>
           {/* Botón cerrar — solo visible en mobile */}
           <button
+            type="button"
             onClick={onCerrar}
             aria-label="Cerrar menú"
-            className="text-slate-400 hover:text-white transition-colors md:hidden"
+            className="min-w-12 min-h-12 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors md:hidden"
           >
-            <X size={18} />
+            <X size={20} />
           </button>
         </div>
 
@@ -84,7 +85,7 @@ export default function Sidebar({ abierto, onCerrar }) {
                 onClick={onCerrar}
                 className={({ isActive }) =>
                   cn(
-                    'flex items-center gap-3 px-3 py-3 rounded-md text-sm font-medium transition-colors',
+                    'flex items-center gap-3 min-h-12 px-3 py-3 rounded-md text-sm font-medium transition-colors',
                     isActive
                       ? 'bg-indigo-600 text-white'
                       : 'text-slate-400 hover:bg-slate-800 hover:text-white',

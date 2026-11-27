@@ -109,3 +109,26 @@ jobs:
 
       - name: Build production SPA bundle
         run: npm run build
+
+      - name: Install Playwright Chromium for Mobile QA
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Mobile 360x800 Public Viewport Tests
+        env:
+          MOBILE_PUBLIC_ONLY: "1"
+        run: npm run test:mobile
+
+      - name: Run Mobile Lighthouse Accessibility Audit (>=90)
+        env:
+          LIGHTHOUSE_REPORTS_DIR: ".cache/lighthouse"
+        run: npm run test:lighthouse
+
+      - name: Upload Mobile QA & Lighthouse Evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-mobile-qa-evidence
+          path: |
+            frontend/tests/mobile/.cache/test-results
+            frontend/.cache/lighthouse
+          if-no-files-found: ignore

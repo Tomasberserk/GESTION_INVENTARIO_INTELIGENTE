@@ -177,20 +177,20 @@ export default function Soporte() {
   // ── Render ────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col md:h-full min-w-0">
       {/* Modal de Video Tutorial */}
       {videoTutorialAbierto && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
           <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-3xl w-full p-4 sm:p-6 relative shadow-2xl space-y-4">
             <div className="flex items-center justify-between text-white pb-2 border-b border-slate-800">
-              <div className="flex items-center gap-2">
-                <Play size={18} className="text-emerald-500" />
-                <h3 className="font-bold text-sm sm:text-base">Guía: ¿Cómo funciona Gestión Neiva?</h3>
+              <div className="flex items-center gap-2 min-w-0">
+                <Play size={18} className="text-emerald-500 shrink-0" />
+                <h3 className="font-bold text-sm sm:text-base truncate">Guía: ¿Cómo funciona Gestión Neiva?</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setVideoTutorialAbierto(false)}
-                className="text-slate-400 hover:text-white p-1"
+                className="min-w-12 min-h-12 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors shrink-0"
                 aria-label="Cerrar video"
               >
                 <X size={20} />
@@ -216,19 +216,21 @@ export default function Soporte() {
       )}
 
       {/* Cabecera */}
-      <div className="flex items-center justify-between mb-4">
-        <div>
+      <div className="flex items-center justify-between gap-3 mb-4 min-w-0">
+        <div className="min-w-0">
           <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-            <MessageSquare className="text-indigo-600 w-7 h-7" />
-            Centro de Ayuda
+            <MessageSquare className="text-indigo-600 w-7 h-7 shrink-0" />
+            <span className="truncate">Centro de Ayuda</span>
           </h1>
           <p className="text-sm text-gray-500 mt-1">
             Aprende a usar la plataforma o solicita acompañamiento del equipo.
           </p>
         </div>
         <button
+          type="button"
           onClick={cargarTickets}
-          className="flex items-center gap-2 border bg-white hover:bg-gray-50 text-gray-700 font-semibold px-4 py-2.5 rounded-lg transition-colors"
+          aria-label="Actualizar lista de tickets"
+          className="min-w-12 min-h-12 flex items-center justify-center gap-2 border bg-white hover:bg-gray-50 text-gray-700 font-semibold px-3 sm:px-4 py-2.5 rounded-lg transition-colors shrink-0"
           title="Actualizar lista"
         >
           <RefreshCw className="w-4 h-4" />
@@ -238,11 +240,11 @@ export default function Soporte() {
 
       {/* Tarjeta Educativa Permanente: Aprender a usar Gestión Neiva */}
       <div className="bg-white rounded-2xl border border-slate-200/90 p-4 mb-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0">
           <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold shrink-0">
             <BookOpen size={20} />
           </div>
-          <div>
+          <div className="min-w-0">
             <h2 className="font-bold text-slate-800 text-sm">
               Aprender a usar Gestión Neiva
             </h2>
@@ -251,11 +253,11 @@ export default function Soporte() {
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shrink-0">
           <button
             type="button"
             onClick={() => setVideoTutorialAbierto(true)}
-            className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-all shadow-xs"
+            className="min-h-12 inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-all shadow-xs"
           >
             <Play size={14} className="fill-white" />
             <span>Ver video tutorial</span>
@@ -267,27 +269,28 @@ export default function Soporte() {
               setGuiaReiniciada(true)
               setTimeout(() => setGuiaReiniciada(false), 3000)
             }}
-            className="text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-200 px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors"
+            className="min-h-12 inline-flex items-center justify-center text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-200 px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors"
           >
             {guiaReiniciada ? '✓ Guía visible en Inicio' : 'Reactivar guía de pasos'}
           </button>
         </div>
       </div>
 
-      {/* Layout de dos paneles */}
-      <div className="flex flex-1 gap-4 min-h-0" style={{ height: 'calc(100vh - 270px)' }}>
+      {/* Layout de dos paneles (apilado en móvil, dos columnas en desktop) */}
+      <div className="flex flex-col md:flex-row flex-1 gap-4 min-h-0 md:h-[calc(100vh-270px)]">
 
         {/* Panel izquierdo — lista de tickets */}
-        <div className="w-full sm:w-72 lg:w-80 flex-shrink-0 flex flex-col bg-white border border-slate-200 rounded-xl overflow-hidden">
+        <div className="w-full md:w-72 lg:w-80 md:flex-shrink-0 flex flex-col bg-white border border-slate-200 rounded-xl overflow-hidden max-h-80 md:max-h-none min-w-0">
           {/* Botón nuevo ticket */}
           <div className="p-3 border-b border-slate-100">
             <button
+              type="button"
               onClick={() => {
                 setMostrarModal(true)
                 setErrorModal(null)
                 setNuevoTicket({ asunto: '', mensaje: '' })
               }}
-              className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2.5 rounded-lg transition-colors"
+              className="w-full min-h-12 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2.5 rounded-lg transition-colors"
             >
               <Plus className="w-4 h-4" />
               Nuevo Ticket
@@ -353,7 +356,7 @@ export default function Soporte() {
         </div>
 
         {/* Panel derecho — detalle del ticket */}
-        <div className="flex-1 flex flex-col bg-white border border-slate-200 rounded-xl overflow-hidden min-w-0">
+        <div className="w-full md:flex-1 flex flex-col bg-white border border-slate-200 rounded-xl overflow-hidden min-w-0 min-h-[320px] md:min-h-0">
           {cargandoDetalle ? (
             <div className="flex flex-col items-center justify-center flex-1 gap-3">
               <RefreshCw className="w-7 h-7 animate-spin text-indigo-400" />
@@ -375,7 +378,7 @@ export default function Soporte() {
           ) : (
             <>
               {/* Cabecera del ticket */}
-              <div className="px-6 py-4 border-b border-slate-100">
+              <div className="px-4 sm:px-6 py-4 border-b border-slate-100">
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <h2 className="text-lg font-bold text-slate-800 truncate">
@@ -398,7 +401,7 @@ export default function Soporte() {
               {/* Hilo de mensajes */}
               <div
                 ref={hiloRef}
-                className="flex-1 overflow-y-auto px-6 py-4 space-y-4"
+                className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-4"
               >
                 {ticketSeleccionado.mensajes && ticketSeleccionado.mensajes.length > 0 ? (
                   ticketSeleccionado.mensajes.map((msg) => {
@@ -440,7 +443,7 @@ export default function Soporte() {
               </div>
 
               {/* Caja de respuesta */}
-              <div className="px-6 py-4 border-t border-slate-100">
+              <div className="px-4 sm:px-6 py-4 border-t border-slate-100">
                 {ticketSeleccionado.estado === 'cerrado' ? (
                   <div className="text-center text-sm text-slate-400 py-2 bg-slate-50 rounded-lg border border-slate-200">
                     Este ticket esta cerrado. No se pueden agregar mas respuestas.
@@ -453,18 +456,19 @@ export default function Soporte() {
                         {errorRespuesta}
                       </div>
                     )}
-                    <div className="flex gap-2 items-end">
+                    <div className="flex gap-2 items-end min-w-0">
                       <textarea
                         value={respuesta}
                         onChange={(e) => setRespuesta(e.target.value)}
                         placeholder="Escribe tu respuesta..."
                         rows={3}
-                        className="flex-1 resize-none border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
+                        className="flex-1 min-w-0 min-h-12 resize-none border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
                       />
                       <button
                         type="submit"
                         disabled={enviandoRespuesta || !respuesta.trim()}
-                        className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-semibold px-5 py-3 rounded-xl transition-colors flex-shrink-0"
+                        aria-label="Enviar respuesta"
+                        className="min-w-12 min-h-12 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-semibold px-3 sm:px-5 py-3 rounded-xl transition-colors flex-shrink-0"
                       >
                         {enviandoRespuesta ? (
                           <RefreshCw className="w-4 h-4 animate-spin" />
@@ -484,18 +488,25 @@ export default function Soporte() {
 
       {/* Modal — Nuevo Ticket */}
       {mostrarModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-ticket-titulo"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+        >
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto overflow-x-hidden p-6 relative">
             {/* Cerrar */}
             <button
+              type="button"
+              aria-label="Cerrar modal de nuevo ticket"
               onClick={() => setMostrarModal(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+              className="absolute top-2 right-2 min-w-12 min-h-12 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <h2 className="text-xl font-bold text-slate-800 mb-1 flex items-center gap-2">
-              <Plus className="w-5 h-5 text-indigo-600" />
+            <h2 id="modal-ticket-titulo" className="text-xl font-bold text-slate-800 mb-1 pr-10 flex items-center gap-2">
+              <Plus className="w-5 h-5 text-indigo-600 shrink-0" />
               Nuevo Ticket de Soporte
             </h2>
             <p className="text-sm text-slate-500 mb-5">
@@ -521,7 +532,7 @@ export default function Soporte() {
                     setNuevoTicket((prev) => ({ ...prev, asunto: e.target.value }))
                   }
                   placeholder="Ej: No puedo registrar una venta"
-                  className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
+                  className="w-full min-h-12 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
                 />
               </div>
 
@@ -544,14 +555,14 @@ export default function Soporte() {
                 <button
                   type="button"
                   onClick={() => setMostrarModal(false)}
-                  className="flex-1 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold py-2.5 rounded-xl transition-colors"
+                  className="flex-1 min-h-12 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold py-2.5 rounded-xl transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={enviandoTicket}
-                  className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-semibold py-2.5 rounded-xl transition-colors"
+                  className="flex-1 min-h-12 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-semibold py-2.5 rounded-xl transition-colors"
                 >
                   {enviandoTicket ? (
                     <>

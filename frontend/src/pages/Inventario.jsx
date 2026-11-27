@@ -67,18 +67,19 @@ export default function Inventario() {
           <h1 className="text-2xl font-bold text-gray-800">{tienda || 'Inventario'}</h1>
           <p className="text-gray-500 text-sm">{productos.length} productos</p>
         </div>
-        <div className="flex gap-3 w-full sm:w-auto">
+        <div className="flex gap-2 sm:gap-3 w-full sm:w-auto min-w-0">
           <input
             type="text"
             placeholder="Buscar por nombre o código..."
             value={busqueda}
             onChange={e => setBusqueda(e.target.value)}
-            className="flex-1 sm:w-64 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+            className="flex-1 min-w-0 min-h-12 sm:w-64 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
           />
           {esAdmin && (
             <button
+              type="button"
               onClick={abrirNuevo}
-              className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
+              className="min-h-12 inline-flex items-center justify-center bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap shrink-0"
             >
               + Producto
             </button>

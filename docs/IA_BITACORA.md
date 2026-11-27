@@ -767,3 +767,228 @@ Comando: `.\.venv\Scripts\pytest.exe tests/unit/test_domain_unit.py::test_regist
 - **Warnings observados (no bloqueantes, 0 fallos):** 9× `StarletteDeprecationWarning` conocidos en pytest (`1× httpx/httpx2`, `8× HTTP_422_UNPROCESSABLE_ENTITY → HTTP_422_UNPROCESSABLE_CONTENT`) y aviso informativo de GitHub Actions sobre Node.js 20 en actions v4/v5.
 
 > **La IA asistió en verificación controlada y documentación; las decisiones y validación final corresponden al equipo humano.**
+
+
+---
+
+## Sesión 2026-11-26 19:22 — Ejecución S2-1 (Objetivos táctiles públicos `>=48 px` a `360×800`)
+
+| Campo | Detalle |
+|---|---|
+| **Fecha y hora local** | 2026-11-26 19:18–19:23 (`-05:00`, America/Bogota) |
+| **Herramienta / Modelo** | Antigravity (rol ejecutor técnico) · Gemini 4 Neon |
+| **Repositorio** | `C:\Users\merid\Documents\GESTION_INVENTARIO_INTELIGENTE` |
+| **Viewport y motor de medición** | `360×800` px · Playwright + Chrome headless sobre Vite dev server local (`http://127.0.0.1:5175`) |
+| **Tarea ejecutada** | `S2-1` — marcada como `[x]` en `PLAN_ACTIVO.md` |
+| **Archivos modificados** | Únicamente `frontend/src/pages/LandingPage.jsx`, `frontend/src/pages/Login.jsx`, `frontend/src/pages/Registro.jsx`, `PLAN_ACTIVO.md` y `docs/IA_BITACORA.md` (sin commit ni push). |
+| **Artefacto temporal de build** | `C:\Users\merid\AppData\Local\Temp\gestion-inventario-s2-1-fd541163-14fd-4cab-b5eb-38a927212428` (`frontend/dist` intacto) |
+
+### 1. Medidas DOM reales a `360×800` (antes vs después)
+
+| Ruta | Elemento | Antes (`W × H px`) | Después (`W × H px`) | Estado NFR-10 (`>=48 px`) |
+|---|---|---:|---:|---|
+| `/` | `scrollWidth / innerWidth` | `360 / 360` (`overflowX: false`) | `360 / 360` (`overflowX: false`) | Sin scroll horizontal ✅ |
+| `/` | Header CTA `"Crear cuenta"` | `137.02 × 44` *(right: `362.38`)* | **`137.02 × 48`** *(right: `344.0`)* | Cumple `>=48 px` y sin recorte ✅ |
+| `/` | Hero CTA principal | `328 × 76` | `328 × 76` | Cumple `>=48 px` ✅ |
+| `/` | Hero CTA `"Ver cómo funciona"` | `328 × 54` | `328 × 54` | Cumple `>=48 px` ✅ |
+| `/login` | `scrollWidth / innerWidth` | `360 / 360` (`overflowX: false`) | `360 / 360` (`overflowX: false`) | Sin scroll horizontal ✅ |
+| `/login` | Input `email` | `278 × 46` | **`278 × 48`** | Cumple `>=48 px` ✅ |
+| `/login` | Input `password` | `278 × 46` | **`278 × 48`** | Cumple `>=48 px` ✅ |
+| `/login` | Botón submit `"Entrar a mi Tienda"` | `278 × 48` | **`278 × 48`** (`min-h-12`) | Cumple `>=48 px` ✅ |
+| `/login` | Enlace `"Volver a la página principal"` | `168.97 × 16` | **`168.97 × 48`** | Cumple `>=48 px` ✅ |
+| `/registro` | `scrollWidth / innerWidth` | `360 / 360` (`overflowX: false`) | `360 / 360` (`overflowX: false`) | Sin scroll horizontal ✅ |
+| `/registro` | Input `nombre_comercial` | `278 × 46` | **`278 × 48`** | Cumple `>=48 px` ✅ |
+| `/registro` | Input `nit_o_cedula` | `278 × 46` | **`278 × 48`** | Cumple `>=48 px` ✅ |
+| `/registro` | Input `email` | `278 × 46` | **`278 × 48`** | Cumple `>=48 px` ✅ |
+| `/registro` | Input `password` | `278 × 46` | **`278 × 48`** | Cumple `>=48 px` ✅ |
+| `/registro` | Botón submit `"Crear mi Tienda"` | `278 × 48` | **`278 × 48`** (`min-h-12`) | Cumple `>=48 px` ✅ |
+| `/registro` | Enlace `"Volver a la página principal"` | `168.97 × 16` | **`168.97 × 48`** | Cumple `>=48 px` ✅ |
+
+### 2. Verificaciones de pruebas, build aislado e higiene
+
+- `npm run test:voice`: **`4/4 ✅ FSM del Modo Voz verificado`** (exit `0`).
+- `npm run build -- --outDir C:\Users\merid\AppData\Local\Temp\gestion-inventario-s2-1-fd541163-14fd-4cab-b5eb-38a927212428`: **`✓ built in 7.12s`** (exit `0`; `frontend/dist` no fue modificado).
+- `git diff --check`: exit `0`.
+
+> **La IA asistió en medición DOM, ajustes mínimos de UI y documentación; las decisiones y validación final corresponden al equipo humano.**
+
+
+---
+
+## Sesión 2026-11-26 19:45 — Ejecución S2-2 (Shell autenticado, carrito y ventas a `360×800`)
+
+| Campo | Detalle |
+|---|---|
+| **Fecha y hora local** | 2026-11-26 19:37–19:46 (`-05:00`, America/Bogota) |
+| **Herramienta / Modelo** | Antigravity (rol ejecutor técnico) · Gemini 4 Neon |
+| **Repositorio** | `C:\Users\merid\Documents\GESTION_INVENTARIO_INTELIGENTE` |
+| **Entorno de prueba** | Exclusivamente local: uvicorn `127.0.0.1:8000` sobre `postgresql://postgres:postgres@localhost:5432/gestion_neiva_test` (`.env` no leído) + Vite dev `127.0.0.1:5175` + Playwright/Chrome headless (`360×800`). Cero datos en producción/Vercel. |
+| **Datos de prueba locales** | Cuentas efímeras de prueba en `gestion_neiva_test`: `s2_2_a3386f58@example.com` (antes) y `s2_2_a574c38f@example.com` (después) + producto `Panela Prueba Local 1kg`. *(Nota: `@test.invalid` fue rechazado con HTTP `422` por Pydantic `EmailStr` / `email-validator` por TLD reservado de uso especial; se usó dominio RFC 2606 `@example.com`, exclusivamente en la BD local de pruebas.)* |
+| **Tarea ejecutada** | `S2-2` — marcada como `[x]` en `PLAN_ACTIVO.md` |
+| **Archivos modificados** | `frontend/src/components/layout/Header.jsx`, `frontend/src/components/layout/Sidebar.jsx`, `frontend/src/components/CartSidebar.jsx`, `frontend/src/pages/Ventas.jsx`, `PLAN_ACTIVO.md`, `docs/IA_BITACORA.md` (`AgentWidget.jsx`, `MostradorMode.jsx` y `Layout.jsx` sin cambios; sin commit ni push). |
+| **Artefacto temporal de build** | `C:\Users\merid\AppData\Local\Temp\gestion-inventario-s2-2-b8e6e4c4-453e-4ac4-8118-8ab5100c3c87` (`frontend/dist` intacto) |
+
+### 1. Overflow horizontal por ruta autenticada (`360×800`)
+
+| Ruta | `docScrollWidth` (antes → después) | `headerScrollWidth` (antes → después) | `mainScrollWidth` (antes → después) | Estado |
+|---|---:|---:|---:|---|
+| `/dashboard` | `360 → 360` | `360 → 360` | `360 → 360` | Sin overflow ✅ |
+| `/inventario` | `360 → 360` | `360 → 360` | `360 → 360` | Sin overflow ✅ |
+| `/ventas` (y `Histórico`) | `360 → 360` | `360 → 360` | `360 → 360` | Sin overflow ✅ |
+| `/soporte` | `360 → 360` | `360 → 360` | `362 → 362` *(+2 px en `Soporte.jsx`)* | `docScrollWidth` OK; `+2 px` interno en `Soporte.jsx` registrado para `S2-3` |
+
+### 2. Controles táctiles medidos a `360×800` (antes vs después)
+
+| Área / Control | Antes (`W × H px`) | Después (`W × H px`) | Estado (`>=48×48 px`) |
+|---|---:|---:|---|
+| `Header`: `Abrir menú` | `22 × 22` | **`48 × 48`** | ✅ |
+| `Header`: `Modo Voz` | `34 × 26` | **`48 × 48`** | ✅ |
+| `Header`: `Chat IA` | `36 × 28` | **`48 × 48`** | ✅ |
+| `Header`: `Carrito` | `40 × 28` | **`48 × 48`** | ✅ |
+| `Header`: `Cerrar sesión` | `36 × 28` | **`48 × 48`** | ✅ |
+| `Sidebar`: `Cerrar menú` | `18 × 18` | **`48 × 48`** | ✅ |
+| `Sidebar`: 7 enlaces `NavLink` | `232 × 44` | **`232 × 48`** | ✅ |
+| `CartSidebar`: `Cerrar drawer` | `16.34 × 20` | **`48 × 48`** | ✅ |
+| `CartSidebar`: `Botón restar (−)` | `28 × 28` | **`48 × 48`** | ✅ |
+| `CartSidebar`: `Botón sumar (+)` | `28 × 28` | **`48 × 48`** | ✅ |
+| `CartSidebar`: `Eliminar ítem` | `11.44 × 20` | **`48 × 48`** | ✅ |
+| `CartSidebar`: `Cobrar venta` | `328 × 48` | **`328 × 48`** | ✅ |
+| `CartSidebar`: `Vaciar carrito` | `328 × 20` | **`328 × 48`** | ✅ |
+| `Cart Modal`: `Cancelar` / `Confirmar venta` | `142 × 42` | **`142 × 48`** | ✅ |
+| `Ventas`: Tabs `Actividad del Día` / `Histórico` | `144.47 × 32` / `100.95 × 32` | **`160 × 48`** / **`160 × 48`** | ✅ |
+| `Ventas`: `Día anterior` / `Día siguiente` | `36 × 36` | **`48 × 48`** | ✅ |
+| `Ventas`: `Select cajero` / `Refrescar` | `252 × 36` / `34 × 34` | **`238 × 48`** / **`48 × 48`** | ✅ |
+| `Ventas Histórico`: Tabs `Hoy` / `Semana` / `Histórico` | `104 × 36` | **`104 × 48`** | ✅ |
+
+### 3. Verificación interactiva, colisiones, pruebas y build
+
+- **Sidebar:** abre (`x: 0`) y cierra (`x: -256`); navegación verificada hacia `/ventas`, `/inventario`, `/soporte` y `/dashboard`.
+- **Carrito & Checkout:** abre (`x: 0`) y cierra (`x: 360`); hit-test `elementFromPoint` positivo en `Cobrar venta` (`clickable: true`) y `Confirmar venta` (`clickable: true`).
+- **`AgentWidget` / `MostradorMode`:** cerrado usa `pointer-events-none` (sin bloquear controles); abierto ocupa `331.19 × 540 px` (`x: 8.81..340.0`, `docScrollWidth: 360`, `overflowX: false`). No requirió modificaciones.
+- **`npm run test:voice`:** `4/4 ✅ FSM del Modo Voz verificado` (exit `0`).
+- **Build Vite aislado en `%TEMP%`:** `✓ built in 7.17s` en `C:\Users\merid\AppData\Local\Temp\gestion-inventario-s2-2-b8e6e4c4-453e-4ac4-8118-8ab5100c3c87` (exit `0`, `frontend/dist` intacto).
+- **`git diff --check`:** exit `0`.
+
+> **La IA asistió en medición DOM, ajustes mínimos de UI y documentación; las decisiones y validación final corresponden al equipo humano.**
+
+
+---
+
+## Sesión 2026-11-26 19:57 — Ejecución S2-3 (Catálogo, Dashboard, ModalProducto y Soporte a `360×800`)
+
+| Campo | Detalle |
+|---|---|
+| **Fecha y hora local** | 2026-11-26 19:52–19:58 (`-05:00`, America/Bogota) |
+| **Herramienta / Modelo** | Antigravity (rol ejecutor técnico) · Gemini 4 Neon |
+| **Repositorio** | `C:\Users\merid\Documents\GESTION_INVENTARIO_INTELIGENTE` |
+| **Entorno de prueba** | Exclusivamente local: uvicorn `127.0.0.1:8000` sobre `postgresql://postgres:postgres@localhost:5432/gestion_neiva_test` (`.env` no leído) + Vite dev `127.0.0.1:5175` + Playwright/Chrome headless (`360×800`). |
+| **Datos de prueba locales** | Cuentas efímeras en `gestion_neiva_test`: `s2_3_93b25c3f@example.com` (antes) y `s2_3_6c41141e@example.com` (después), cada una con producto `Yogurt Griego Prueba S2-3` (stock `4`, vencimiento `+5d`), `1` venta y `1` ticket de soporte (`Prueba responsividad soporte S2-3`). Exclusivamente BD local de pruebas. |
+| **Tarea ejecutada** | `S2-3` — marcada como `[x]` en `PLAN_ACTIVO.md` |
+| **Archivos modificados** | `frontend/src/pages/Dashboard.jsx`, `frontend/src/pages/Inventario.jsx`, `frontend/src/pages/Soporte.jsx`, `frontend/src/components/ProductoCard.jsx`, `frontend/src/components/ModalProducto.jsx`, `PLAN_ACTIVO.md`, `docs/IA_BITACORA.md` (sin commit ni push). |
+| **Artefacto temporal de build** | `C:\Users\merid\AppData\Local\Temp\gestion-inventario-s2-3-0bbb8554-f21e-4b8c-98b6-6a4e00c08603` (`frontend/dist` intacto) |
+
+### 1. Overflow horizontal por ruta y estado (`360×800`)
+
+| Ruta / Estado | `docScrollWidth` (antes → después) | `mainScrollWidth` (antes → después) | Estado |
+|---|---:|---:|---|
+| `/dashboard` (vacío y con datos/Recharts/alertas) | `360 → 360` | `360 → 360` | Sin overflow ✅ |
+| `/inventario` (vacío, con datos y error 500 simulado) | `360 → 360` | `360 → 360` | Sin overflow ✅ |
+| `/soporte` (vacío) | `360 → 360` | **`362 → 360`** | Corregido (`-2 px`) ✅ |
+| `/soporte` (lista y detalle de ticket) | `360 → 360` | **`362 → 360`** | Corregido (`-2 px`) ✅ |
+| `/soporte` (error 500 simulado) | `360 → 360` | **`362 → 360`** | Corregido (`-2 px`) ✅ |
+
+### 2. Controles y modales medidos a `360×800` (antes vs después)
+
+| Componente / Control | Antes (`W × H px`) | Después (`W × H px`) | Estado (`>=48 px`) |
+|---|---:|---:|---|
+| `Dashboard`: Recharts `BarChart` SVG | `286 × 220` (`x: 37..323`) | `286 × 220` (`x: 37..323`) | Sin overflow ✅ |
+| `Inventario`: Input búsqueda / `+ Producto` | `212.3 × 38` / `103.7 × 38` | **`216.3 × 48`** / **`103.7 × 48`** | ✅ |
+| `ProductoCard`: `Agregar` / `Editar` / `Eliminar` | `191.53 × 44` / `43.23 × 44` / `43.23 × 44` | **`182 × 48`** / **`48 × 48`** / **`48 × 48`** | ✅ |
+| `ModalProducto`: Contenedor (`W`, scroll Y) | `328 == 328`, `overflowY: auto` | `328 == 328`, `overflowY: auto` (`720/977`) | Sin overflow X ✅ |
+| `ModalProducto`: `Cerrar (X)` / `Cámara` | `16.34 × 20` / `50.72 × 38` | **`48 × 48`** / **`48 × 48`** | ✅ |
+| `ModalProducto`: Inputs / Selects | `280 × 38..39` | **`280 × 48`** (`codigo_barras: 224 × 48`) | ✅ |
+| `ModalProducto`: `Cancelar` / `Guardar` | `135 × 42` / `133 × 42` | **`135 × 48`** / **`133 × 48`** | ✅ |
+| `Soporte`: `Actualizar` / `Nuevo Ticket` | `50 × 38` / `302 × 44` | **`48 × 48`** / **`302 × 48`** | ✅ |
+| `Soporte`: `Ver video` / `Reactivar guía` | `139.66 × 48` / `146.34 × 50` | **`294 × 48`** / **`294 × 48`** | ✅ |
+| `Soporte`: `Textarea respuesta` / `Enviar` | `34 × 86 (x:385)` / `56 × 40 (x:427)` | **`238 × 86 (x:33..271)`** / **`48 × 48 (x:279..327)`** | Visible y `>=48 px` ✅ |
+| `Soporte Modal`: `Cerrar (X)` / `Asunto` / `Cancelar` / `Enviar` | `20×20` / `280×42` / `135×46` / `133×46` | **`48×48`** / **`280×48`** / **`135×48`** / **`133×48`** | ✅ |
+
+### 3. Pruebas, build aislado e higiene
+
+- `npm run test:voice`: **`4/4 ✅ FSM del Modo Voz verificado`** (exit `0`).
+- Build Vite aislado: **`✓ built in 6.42s`** en `C:\Users\merid\AppData\Local\Temp\gestion-inventario-s2-3-0bbb8554-f21e-4b8c-98b6-6a4e00c08603` (exit `0`, `frontend/dist` intacto).
+- `git diff --check`: exit `0`.
+
+> **La IA asistió en medición DOM, correcciones responsive y documentación; las decisiones y validación final corresponden al equipo humano.**
+
+---
+
+## Sesión 2026-11-27 — S2-4A: Automatización móvil `360×800`, auditoría Lighthouse y preparación CI
+
+### Contexto y alcance
+
+- **Microtarea:** `S2-4A` (único bloque ejecutado; `S2-4` permanece **`[ ]`** en `PLAN_ACTIVO.md` hasta confirmar corrida verde en GitHub Actions de los nuevos pasos móviles en `frontend-verify`).
+- **Archivos añadidos / modificados en alcance:**
+  - `frontend/package.json` y `frontend/package-lock.json` (scripts `test:mobile`, `test:lighthouse` y `devDependencies` declaradas con `^` en `package.json`, con versiones resueltas en `package-lock.json` y reproducibles mediante `npm ci`: `@playwright/test@1.65.1`, `lighthouse@13.6.0`).
+  - `frontend/tests/mobile/playwright.config.mjs` (viewport `360×800`, `outputDir: './.cache/test-results'` ignorado por git).
+  - `frontend/tests/mobile/mobile-360.spec.mjs` (3 specs públicas + 1 spec E2E autenticado local completo).
+  - `frontend/tests/mobile/run-mobile-e2e.mjs` (runner Node ESM multiplataforma: levanta uvicorn contra `gestion_neiva_test` local cuando `MOBILE_PUBLIC_ONLY !== '1'` y Vite dev en `127.0.0.1:5175`, ejecuta Playwright local y cierra procesos hijos en `finally`).
+  - `frontend/tests/mobile/run-lighthouse-mobile.mjs` (runner Node ESM multiplataforma: compila SPA en `%TEMP%/gestion-inventario-s2-4-<uuid>`, sirve `vite preview` en `127.0.0.1:4176`, ejecuta Lighthouse móvil `360×800` usando Chromium empaquetado de Playwright `159.0.8154.6` y exige accesibilidad `>= 90`).
+  - `.github/workflows/ci.yml` (pasos añadidos en `frontend-verify`: instalación de Chromium de Playwright, `MOBILE_PUBLIC_ONLY=1 npm run test:mobile` y `npm run test:lighthouse`; sin secretos, sin producción y sin tocar `frontend/dist`).
+  - `PLAN_ACTIVO.md` y `docs/IA_BITACORA.md`.
+- **Intactos:** componentes de producto (`0` defectos nuevos descubiertos), backend de producción, migraciones, `frontend/dist`, `factory/`, ADRs y `.env`.
+
+### 1. Resultado de suite Playwright móvil `360×800`
+
+| Comando / Modo | Resultado | Detalle por ruta / flujo |
+|---|---|---|
+| `npm run test:mobile` (completo local) | **`4 passed (48.1s)`**, exit `0` | 1) `/` landing (`0 px` overflow, CTAs `>=48 px`, `right <= 360`); 2) `/login` (`0 px` overflow, inputs/submit/volver `>=48 px`); 3) `/registro` (`0 px` overflow, 4 inputs/submit/volver `>=48 px`); 4) Recorrido autenticado local (`10.8s`). |
+| Recorrido autenticado local (`s2_4_<hex>@example.com`, BD local `gestion_neiva_test`) | **Pasó ✅** | Registro API local + semilla de producto y ticket → Login UI en `/login` → `/dashboard` (`doc/header/main == 360`, 5 botones header `>=48×48`) → Sidebar drawer → `/inventario` + `ProductoCard` + `ModalProducto` (`scrollWidth <= clientWidth`, `overflowY: auto`, cierre limpio) → `CartSidebar` + cobro real (`Venta registrada`) → `/ventas` (tabs `Actividad del Día` / `Histórico`) → `/soporte` (detalle + textarea/botón `Enviar` `48×48` dentro de `360 px`) → `Cerrar sesión` (`access_token === null` + `/login`). |
+
+> **Nota sobre datos de prueba:** Todas las entidades creadas en el recorrido autenticado residen exclusivamente en la base local `gestion_neiva_test` con correo reservado `@example.com` (RFC 2606) y clave de prueba local, sin leer `.env` ni tocar servicios externos o Vercel.
+
+### 2. Resultado de auditoría Lighthouse móvil (`360×800`, `formFactor: 'mobile'`)
+
+- **Build aislado (sin tocar `frontend/dist`):** `C:\Users\merid\AppData\Local\Temp\gestion-inventario-s2-4-078d18f3-c6c0-4a0a-b527-6467d13680f0`
+- **Resumen JSON:** `C:\Users\merid\AppData\Local\Temp\gestion-inventario-s2-4-078d18f3-c6c0-4a0a-b527-6467d13680f0\lighthouse-reports\summary.json`
+
+| Ruta | Accesibilidad móvil | Umbral (`>=90`) | Hallazgos no bloqueantes observados | Reportes generados |
+|---|---:|---|---|---|
+| `/` | **`95 / 100`** | ✅ | `color-contrast` | `lighthouse-landing.json` / `lighthouse-landing.html` |
+| `/login` | **`90 / 100`** | ✅ | `color-contrast`, `landmark-one-main` | `lighthouse-login.json` / `lighthouse-login.html` |
+| `/registro` | **`90 / 100`** | ✅ | `color-contrast`, `landmark-one-main` | `lighthouse-registro.json` / `lighthouse-registro.html` |
+
+### 3. Regresión, preparación CI y condición de cierre de `S2-4`
+
+- `npm run test:voice`: **`4/4 ✅ FSM del Modo Voz verificado`** (exit `0`).
+- `.github/workflows/ci.yml` (`frontend-verify`): se configuró ejecución pública determinista en CI (`MOBILE_PUBLIC_ONLY=1 npm run test:mobile` + `npm run test:lighthouse`), mientras el recorrido autenticado con PostgreSQL local queda ejecutable vía `npm run test:mobile`.
+- **Condición exacta para cerrar `S2-4` (`[x]`):** realizar commit/push autorizado y verificar una corrida verde en GitHub Actions donde el job `frontend-verify` pase `Install Playwright Chromium for Mobile QA`, `Run Mobile 360x800 Public Viewport Tests` (`3 passed, 1 skipped`) y `Run Mobile Lighthouse Accessibility Audit (>=90)`.
+
+> **La IA asistió en automatización de pruebas, auditoría Lighthouse, configuración de CI y documentación; las decisiones y validación final corresponden al equipo humano.**
+
+---
+
+## Sesión 2026-11-27 — S2-4B: Evidencia descargable de QA móvil en GitHub Actions (`frontend-mobile-qa-evidence`)
+
+### Cambios realizados (sin modificar componentes de producción)
+
+1. `frontend/tests/mobile/run-lighthouse-mobile.mjs`: soporte opcional de `LIGHTHOUSE_REPORTS_DIR`. Si se define, guarda allí `lighthouse-*.json`, `lighthouse-*.html` y `summary.json` (resuelto respecto a `frontend/`); si no se define, conserva la salida dentro del directorio temporal. El build de Vite permanece aislado en `%TEMP%/gestion-inventario-s2-4-<uuid>` sin tocar `frontend/dist`.
+2. `.github/workflows/ci.yml` (`frontend-verify`):
+   - Ejecución de Lighthouse con `LIGHTHOUSE_REPORTS_DIR: ".cache/lighthouse"`.
+   - Nuevo paso `Upload Mobile QA & Lighthouse Evidence` (`actions/upload-artifact@v4`, `if: always()`, `if-no-files-found: ignore`) con nombre `frontend-mobile-qa-evidence` para subir `frontend/tests/mobile/.cache/test-results` y `frontend/.cache/lighthouse`.
+3. `PLAN_ACTIVO.md` y `docs/IA_BITACORA.md`: corrección de redacción sobre dependencias (`package.json` con `^`, versiones resueltas en `package-lock.json` y reproducibles mediante `npm ci`) y registro de evidencia `S2-4B`. `S2-4` permanece **`[ ]`** hasta la corrida verde en GitHub Actions.
+
+### Verificación local ejecutada
+
+- Validación YAML `.github/workflows/ci.yml`: OK (`frontend-verify` con `9` pasos; paso final `Upload Mobile QA & Lighthouse Evidence`).
+- `npm run test:voice`: **`4/4 ✅ FSM del Modo Voz verificado`** (exit `0`).
+- `MOBILE_PUBLIC_ONLY=1 npm run test:mobile`: **`3 passed, 1 skipped (10.2s)`** (exit `0`).
+- `LIGHTHOUSE_REPORTS_DIR=.cache/lighthouse npm run test:lighthouse`: exit `0`, build aislado en `C:\Users\merid\AppData\Local\Temp\gestion-inventario-s2-4-44462b56-3d56-4ed2-95c1-84fe1c357050` (`✓ built in 9.80s`, `frontend/dist` intacto), accesibilidad **`/` = `95`**, **`/login` = `90`**, **`/registro` = `90`**.
+- Evidencia generada en `frontend/.cache/lighthouse/` (ignorado por `.gitignore` mediante `.cache/`):
+  - `lighthouse-landing.html` (`325,270 B`), `lighthouse-landing.json` (`168,454 B`)
+  - `lighthouse-login.html` (`274,725 B`), `lighthouse-login.json` (`110,788 B`)
+  - `lighthouse-registro.html` (`287,970 B`), `lighthouse-registro.json` (`127,482 B`)
+  - `summary.json` (`2,540 B`)
+- `git diff --check`: exit `0`.
+
+> **La IA asistió en la parametrización de reportes Lighthouse, configuración de artefactos CI y actualización documental; las decisiones y validación final corresponden al equipo humano.**

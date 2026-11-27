@@ -100,7 +100,7 @@ export default function Dashboard() {
               <button
                 type="button"
                 onClick={() => setVideoModalAbierto(false)}
-                className="text-slate-400 hover:text-white p-1"
+                className="min-w-12 min-h-12 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
                 aria-label="Cerrar video"
               >
                 <X size={20} />
@@ -182,7 +182,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
         {/* Gráfica horizontal de barras */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-5">
+        <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-5 min-w-0">
           <h2 className="text-sm font-semibold text-slate-700 mb-4">
             Top 5 productos más vendidos
           </h2>
@@ -282,9 +282,9 @@ export default function Dashboard() {
           </h2>
           <div className="space-y-2">
             {datos.stock_bajo.map(p => (
-              <div key={p.id} className="flex justify-between text-sm text-gray-700">
-                <span>{p.nombre}</span>
-                <span className="font-semibold text-amber-600">{p.cantidad} uds</span>
+              <div key={p.id} className="flex justify-between gap-2 text-sm text-gray-700 min-w-0">
+                <span className="truncate">{p.nombre}</span>
+                <span className="font-semibold text-amber-600 shrink-0">{p.cantidad} uds</span>
               </div>
             ))}
           </div>

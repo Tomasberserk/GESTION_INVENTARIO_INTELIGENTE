@@ -34,7 +34,7 @@ export default function Login() {
       <div className="w-full max-w-[360px] mx-auto pt-6">
         <Link
           to="/"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-emerald-700 transition-colors mb-6"
+          className="inline-flex items-center gap-1.5 min-h-12 text-xs font-semibold text-slate-500 hover:text-emerald-700 transition-colors mb-2"
         >
           <ArrowLeft size={16} />
           <span>Volver a la página principal</span>
@@ -72,7 +72,7 @@ export default function Login() {
                 required
                 autoComplete="email"
                 placeholder="nombre@tutienda.com"
-                className="w-full bg-[#fafaf9] border border-slate-200 rounded-xl px-3.5 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition"
+                className="w-full min-h-12 bg-[#fafaf9] border border-slate-200 rounded-xl px-3.5 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition"
               />
             </div>
 
@@ -88,7 +88,7 @@ export default function Login() {
                 required
                 autoComplete="current-password"
                 placeholder="••••••••"
-                className="w-full bg-[#fafaf9] border border-slate-200 rounded-xl px-3.5 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition"
+                className="w-full min-h-12 bg-[#fafaf9] border border-slate-200 rounded-xl px-3.5 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition"
               />
             </div>
 
@@ -96,7 +96,7 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={cargando}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-sm py-3.5 rounded-xl transition-all shadow-sm active:scale-98"
+                className="w-full min-h-12 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-sm py-3.5 rounded-xl transition-all shadow-sm active:scale-98"
               >
                 {cargando ? 'Ingresando...' : 'Entrar a mi Tienda'}
               </button>

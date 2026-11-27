@@ -48,11 +48,13 @@ export default function CartSidebar() {
           carritoAbierto ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center justify-between pl-4 pr-2 py-2 border-b">
           <h2 className="font-bold text-lg">Carrito</h2>
           <button
+            type="button"
+            aria-label="Cerrar carrito"
             onClick={() => setCarritoAbierto(false)}
-            className="text-gray-400 hover:text-gray-700 text-xl leading-none"
+            className="min-w-12 min-h-12 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 text-xl leading-none transition-colors"
           >
             ✕
           </button>
@@ -64,7 +66,7 @@ export default function CartSidebar() {
           ) : (
             carrito.map(item => (
               <div key={item.id} className="p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-start justify-between gap-2 mb-2">
+                <div className="flex items-center justify-between gap-2 mb-2">
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm truncate">{item.nombre}</p>
                     <p className="text-violet-600 text-xs">
@@ -73,14 +75,16 @@ export default function CartSidebar() {
                     </p>
                   </div>
                   <button
+                    type="button"
+                    aria-label={`Eliminar ${item.nombre}`}
                     onClick={() => eliminar(item.id)}
-                    className="text-red-400 hover:text-red-600 text-sm shrink-0"
+                    className="min-w-12 min-h-12 flex items-center justify-center rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 text-sm shrink-0 transition-colors"
                   >
                     ✕
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   {ES_GRANEL(item.unidad_medida) ? (
                     /* Productos a granel: input numérico con decimales */
                     <div className="flex items-center gap-2">
@@ -91,23 +95,27 @@ export default function CartSidebar() {
                         max={item.cantidad_actual}
                         value={item.cantidad}
                         onChange={e => setCantidad(item.id, e.target.value)}
-                        className="w-24 border border-gray-300 rounded-lg px-2 py-1 text-sm text-center focus:outline-none focus:ring-2 focus:ring-violet-400"
+                        className="w-24 min-h-12 border border-gray-300 rounded-lg px-2 py-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-violet-400"
                       />
                       <span className="text-xs text-gray-500">{item.unidad_medida}</span>
                     </div>
                   ) : (
                     /* Productos por unidad: botones +/- */
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1.5">
                       <button
+                        type="button"
+                        aria-label={`Restar ${item.nombre}`}
                         onClick={() => restar(item.id)}
-                        className="w-7 h-7 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold"
+                        className="w-12 h-12 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-lg text-base font-bold transition-colors"
                       >
                         −
                       </button>
                       <span className="w-8 text-center text-sm font-medium">{item.cantidad}</span>
                       <button
+                        type="button"
+                        aria-label={`Sumar ${item.nombre}`}
                         onClick={() => agregar(item)}
-                        className="w-7 h-7 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold"
+                        className="w-12 h-12 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-lg text-base font-bold transition-colors"
                       >
                         +
                       </button>
@@ -126,7 +134,7 @@ export default function CartSidebar() {
                           const val = parseFloat(e.target.value) || 0;
                           setCantidad(item.id, val / item.precio_venta);
                         }}
-                        className="w-20 border border-gray-300 bg-white rounded-md px-1 py-1 text-sm text-right font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-violet-400"
+                        className="w-20 min-h-12 border border-gray-300 bg-white rounded-md px-1 py-2 text-sm text-right font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-violet-400"
                         title="Puedes escribir el precio final de la balanza directamente"
                       />
                     </div>
@@ -154,22 +162,24 @@ export default function CartSidebar() {
           </div>
         )}
 
-        <div className="p-4 border-t space-y-3">
+        <div className="p-4 border-t space-y-2">
           <div className="flex justify-between font-bold text-lg">
             <span>Total</span>
             <span className="text-violet-600">${total.toLocaleString('es-CO', { maximumFractionDigits: 0 })}</span>
           </div>
           <button
+            type="button"
             onClick={() => setConfirmando(true)}
             disabled={!carrito.length || procesando}
-            className="w-full bg-violet-600 hover:bg-violet-700 disabled:bg-gray-200 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors"
+            className="w-full min-h-12 bg-violet-600 hover:bg-violet-700 disabled:bg-gray-200 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors"
           >
             {procesando ? 'Procesando...' : 'Cobrar venta'}
           </button>
           {carrito.length > 0 && (
             <button
+              type="button"
               onClick={vaciar}
-              className="w-full text-sm text-gray-400 hover:text-red-500 transition-colors"
+              className="w-full min-h-12 text-sm text-gray-400 hover:text-red-500 rounded-lg transition-colors"
             >
               Vaciar carrito
             </button>
@@ -211,16 +221,18 @@ export default function CartSidebar() {
 
             <div className="p-4 grid grid-cols-2 gap-3">
               <button
+                type="button"
                 onClick={() => setConfirmando(false)}
                 disabled={procesando}
-                className="py-2.5 rounded-lg border border-gray-300 text-gray-600 font-semibold text-sm hover:bg-gray-50 active:scale-95 transition-all disabled:opacity-50"
+                className="min-h-12 py-2.5 rounded-lg border border-gray-300 text-gray-600 font-semibold text-sm hover:bg-gray-50 active:scale-95 transition-all disabled:opacity-50"
               >
                 Cancelar
               </button>
               <button
+                type="button"
                 onClick={checkout}
                 disabled={procesando}
-                className="py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
+                className="min-h-12 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
               >
                 {procesando ? (
                   <>

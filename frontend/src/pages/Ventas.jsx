@@ -132,9 +132,10 @@ function ExcelExport({ empresaId }) {
             </span>
           )}
           <button
+            type="button"
             onClick={descargar}
             disabled={descargando}
-            className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-200 disabled:cursor-not-allowed text-white font-semibold px-5 py-2.5 rounded-xl transition-colors text-sm flex items-center gap-2"
+            className="min-h-12 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-200 disabled:cursor-not-allowed text-white font-semibold px-5 py-2.5 rounded-xl transition-colors text-sm flex items-center gap-2"
           >
             {descargando ? (
               <>
@@ -191,7 +192,7 @@ function VentaTimelineItem({ venta }) {
           </span>
           <button
             type="button"
-            className="text-slate-400 hover:text-slate-600 p-1 transition-transform"
+            className="min-w-12 min-h-12 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 transition-transform"
             aria-label={expandido ? 'Colapsar detalles' : 'Ver productos'}
           >
             {expandido ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
@@ -385,7 +386,7 @@ export default function Ventas() {
             <button
               type="button"
               onClick={() => setModoVista('actividad')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
+              className={`flex-1 sm:flex-initial min-h-12 flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
                 modoVista === 'actividad'
                   ? 'bg-white text-violet-700 shadow-sm'
                   : 'text-slate-600 hover:text-slate-800'
@@ -397,7 +398,7 @@ export default function Ventas() {
             <button
               type="button"
               onClick={() => setModoVista('historico')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
+              className={`flex-1 sm:flex-initial min-h-12 flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
                 modoVista === 'historico'
                   ? 'bg-white text-violet-700 shadow-sm'
                   : 'text-slate-600 hover:text-slate-800'
@@ -418,26 +419,28 @@ export default function Ventas() {
           {/* Barra de Control: Selector de Fecha + Filtro Cajero */}
           <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
             {/* Controles de Fecha Mobile-First */}
-            <div className="flex items-center justify-between sm:justify-start gap-2">
+            <div className="flex items-center justify-between sm:justify-start gap-2 flex-wrap">
               <button
                 type="button"
                 onClick={irDiaAnterior}
-                className="p-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors"
+                aria-label="Día anterior"
+                className="min-w-12 min-h-12 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors shrink-0"
                 title="Día anterior"
               >
                 <ChevronLeft size={18} />
               </button>
 
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-100 text-slate-800 font-semibold text-xs sm:text-sm">
-                <Calendar size={16} className="text-violet-600" />
-                <span>{formatearFechaCabecera(fechaActividad)}</span>
+              <div className="flex-1 sm:flex-initial min-w-0 min-h-12 flex items-center justify-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-100 text-slate-800 font-semibold text-xs sm:text-sm">
+                <Calendar size={16} className="text-violet-600 shrink-0" />
+                <span className="truncate">{formatearFechaCabecera(fechaActividad)}</span>
               </div>
 
               <button
                 type="button"
                 onClick={irDiaSiguiente}
                 disabled={esHoy}
-                className="p-2 rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-slate-600 transition-colors"
+                aria-label="Día siguiente"
+                className="min-w-12 min-h-12 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-slate-600 transition-colors shrink-0"
                 title="Día siguiente"
               >
                 <ChevronRight size={18} />
@@ -447,7 +450,7 @@ export default function Ventas() {
                 <button
                   type="button"
                   onClick={irAHoy}
-                  className="text-xs text-violet-600 hover:text-violet-700 font-semibold px-2 py-1 underline ml-1"
+                  className="min-h-12 inline-flex items-center text-xs text-violet-600 hover:text-violet-700 font-semibold px-3 py-2 underline"
                 >
                   Ir a Hoy
                 </button>
@@ -460,7 +463,7 @@ export default function Ventas() {
               <select
                 value={cajeroFiltro}
                 onChange={(e) => setCajeroFiltro(e.target.value)}
-                className="border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-500 w-full sm:w-auto"
+                className="min-h-12 border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-500 w-full sm:w-auto"
               >
                 <option value="">Todos los cajeros</option>
                 {cajerosDisponibles.map((c) => (
@@ -472,7 +475,8 @@ export default function Ventas() {
               <button
                 type="button"
                 onClick={cargarActividad}
-                className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-500 transition-colors"
+                aria-label="Refrescar actividad"
+                className="min-w-12 min-h-12 flex items-center justify-center rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-500 transition-colors shrink-0"
                 title="Refrescar actividad"
               >
                 <RefreshCw size={16} className={cargandoActividad ? 'animate-spin' : ''} />
@@ -581,7 +585,7 @@ export default function Ventas() {
                 key={t.id}
                 type="button"
                 onClick={() => setTabHistorico(t.id)}
-                className={`flex-1 py-2 px-2 sm:px-3 rounded-lg text-sm font-medium transition-all ${
+                className={`flex-1 min-h-12 py-2 px-2 sm:px-3 rounded-lg text-sm font-medium transition-all ${
                   tabHistorico === t.id
                     ? 'bg-white text-violet-700 shadow-sm'
                     : 'text-slate-500 hover:text-slate-700'

@@ -81,7 +81,7 @@ export default function Registro() {
       <div className="max-w-md w-full mx-auto pt-4 sm:pt-8">
         <Link
           to="/"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-emerald-700 transition-colors mb-6"
+          className="inline-flex items-center gap-1.5 min-h-12 text-xs font-semibold text-slate-500 hover:text-emerald-700 transition-colors mb-2"
         >
           <ArrowLeft size={16} />
           <span>Volver a la página principal</span>
@@ -118,7 +118,7 @@ export default function Registro() {
                 onChange={cambiar}
                 required
                 placeholder="Ej: Tienda La Floresta"
-                className="w-full bg-[#fafaf9] border border-slate-200 rounded-xl px-3.5 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition"
+                className="w-full min-h-12 bg-[#fafaf9] border border-slate-200 rounded-xl px-3.5 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition"
               />
             </div>
 
@@ -133,7 +133,7 @@ export default function Registro() {
                 onChange={cambiar}
                 required
                 placeholder="Ej: 1075234567 o 901234567-1"
-                className="w-full bg-[#fafaf9] border border-slate-200 rounded-xl px-3.5 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition"
+                className="w-full min-h-12 bg-[#fafaf9] border border-slate-200 rounded-xl px-3.5 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition"
               />
               <span className="text-[11px] text-slate-400 mt-1 block">
                 Identificación para el registro exclusivo de tu negocio.
@@ -152,7 +152,7 @@ export default function Registro() {
                 required
                 autoComplete="email"
                 placeholder="nombre@tutienda.com"
-                className="w-full bg-[#fafaf9] border border-slate-200 rounded-xl px-3.5 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition"
+                className="w-full min-h-12 bg-[#fafaf9] border border-slate-200 rounded-xl px-3.5 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition"
               />
               <span className="text-[11px] text-slate-400 mt-1 block">
                 Este correo será tu usuario para entrar a la tienda.
@@ -171,7 +171,7 @@ export default function Registro() {
                 required
                 autoComplete="new-password"
                 placeholder="Mínimo 8 caracteres (letras, número y símbolo)"
-                className="w-full bg-[#fafaf9] border border-slate-200 rounded-xl px-3.5 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition"
+                className="w-full min-h-12 bg-[#fafaf9] border border-slate-200 rounded-xl px-3.5 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition"
               />
               <span className="text-[11px] text-slate-400 mt-1 block leading-tight">
                 Incluye al menos una mayúscula, un número y un símbolo (ej: Clave2026!).
@@ -182,7 +182,7 @@ export default function Registro() {
               <button
                 type="submit"
                 disabled={cargando}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-sm py-3.5 rounded-xl transition-all shadow-sm active:scale-98 flex items-center justify-center gap-2"
+                className="w-full min-h-12 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-sm py-3.5 rounded-xl transition-all shadow-sm active:scale-98 flex items-center justify-center gap-2"
               >
                 {cargando ? (
                   <>

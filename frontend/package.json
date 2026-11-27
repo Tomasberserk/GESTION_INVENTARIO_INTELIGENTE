@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test:voice": "esbuild src/services/voice/VoiceTurnManager.js --bundle --format=esm --outfile=tests/voice/.cache/vtm.mjs --define:import.meta.env={} && node tests/voice/lateResponse.test.mjs"
+    "test:voice": "esbuild src/services/voice/VoiceTurnManager.js --bundle --format=esm --outfile=tests/voice/.cache/vtm.mjs --define:import.meta.env={} && node tests/voice/lateResponse.test.mjs",
+    "test:mobile": "node tests/mobile/run-mobile-e2e.mjs",
+    "test:lighthouse": "node tests/mobile/run-lighthouse-mobile.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.0.5",
@@ -28,8 +30,10 @@
     "tailwind-merge": "^2.2.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.1",
     "@tailwindcss/postcss": "^4.1.0",
     "@vitejs/plugin-react": "^4.3.0",
+    "lighthouse": "^13.6.0",
     "postcss": "^8.4.0",
     "tailwindcss": "^4.1.0",
     "vite": "^6.3.0"

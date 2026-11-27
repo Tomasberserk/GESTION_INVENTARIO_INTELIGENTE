@@ -24,30 +24,31 @@ export default function Header({ onMenuToggle }) {
   const rolTexto = esAdmin ? 'Administrador' : 'Cajero'
 
   return (
-    <header className="h-14 bg-slate-800 border-b border-slate-700 flex items-center justify-between px-4 sm:px-6 shrink-0">
-      <div className="flex items-center gap-3">
+    <header className="min-h-14 py-1 bg-slate-800 border-b border-slate-700 flex items-center justify-between gap-1 sm:gap-3 px-2 sm:px-6 shrink-0">
+      <div className="flex items-center gap-1 sm:gap-3 min-w-0">
         {/* Hamburguesa — solo visible en mobile */}
         <button
+          type="button"
           onClick={onMenuToggle}
           aria-label="Abrir menú"
-          className="text-slate-400 hover:text-white transition-colors md:hidden"
+          className="min-w-12 min-h-12 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors shrink-0 md:hidden"
         >
           <Menu size={22} />
         </button>
 
-        <div className="flex items-center gap-2">
-          <span className="text-white font-semibold text-lg tracking-tight">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="text-white font-semibold text-sm sm:text-lg tracking-tight truncate">
             Gestión Neiva
           </span>
-          <span className="hidden md:inline-block text-slate-500 text-xs font-mono">
+          <span className="hidden md:inline-block text-slate-500 text-xs font-mono shrink-0">
             v1.0
           </span>
         </div>
       </div>
 
-      <div className="flex items-center gap-2.5 sm:gap-4">
+      <div className="flex items-center gap-1 sm:gap-3 shrink-0">
         {/* Accesos Inteligentes: Modo Voz y Chat IA */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           {/* Badge de Suscripción / Trial Pro */}
           {esTrialActivo && (
             <button
@@ -82,14 +83,15 @@ export default function Header({ onMenuToggle }) {
           <button
             type="button"
             onClick={abrirModoVoz}
-            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all shadow-xs active:scale-95 ${
+            aria-label={tieneAccesoPro ? 'Abrir Modo Mostrador por Voz' : 'Modo Voz (Función Pro)'}
+            className={`min-w-12 min-h-12 flex items-center justify-center gap-1 px-2 sm:px-3 rounded-xl text-xs font-semibold transition-all shadow-xs active:scale-95 ${
               tieneAccesoPro
                 ? 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white'
                 : 'bg-slate-700/60 hover:bg-slate-700 text-slate-300 border border-slate-600'
             }`}
             title={tieneAccesoPro ? 'Abrir Modo Mostrador por Voz (Manos Libres)' : 'Modo Voz (Función Pro)'}
           >
-            <Mic size={14} className={tieneAccesoPro ? 'animate-pulse text-cyan-200' : 'text-slate-400'} />
+            <Mic size={16} className={tieneAccesoPro ? 'animate-pulse text-cyan-200' : 'text-slate-400'} />
             <span className="hidden sm:inline">Voz</span>
           </button>
 
@@ -97,7 +99,8 @@ export default function Header({ onMenuToggle }) {
           <button
             type="button"
             onClick={toggleChat}
-            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all shadow-xs active:scale-95 ${
+            aria-label={tieneAccesoPro ? 'Abrir Asistente Virtual POS' : 'Chat IA (Función Pro)'}
+            className={`min-w-12 min-h-12 flex items-center justify-center gap-1 px-2 sm:px-3 rounded-xl text-xs font-semibold transition-all shadow-xs active:scale-95 ${
               chatAbierto
                 ? 'bg-indigo-600 text-white ring-2 ring-indigo-400'
                 : tieneAccesoPro
@@ -106,7 +109,7 @@ export default function Header({ onMenuToggle }) {
             }`}
             title={tieneAccesoPro ? 'Abrir Asistente Virtual POS' : 'Chat IA (Función Pro)'}
           >
-            <Bot size={14} className={tieneAccesoPro ? 'text-indigo-300' : 'text-slate-400'} />
+            <Bot size={16} className={tieneAccesoPro ? 'text-indigo-300' : 'text-slate-400'} />
             <span className="hidden sm:inline">Chat IA</span>
           </button>
         </div>
@@ -115,24 +118,25 @@ export default function Header({ onMenuToggle }) {
         <button
           type="button"
           onClick={() => setCarritoAbierto((prev) => !prev)}
-          className="relative flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95"
+          aria-label="Abrir mostrador de ventas"
+          className="relative min-w-12 min-h-12 flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 sm:px-3 rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95"
           title="Abrir mostrador de ventas"
         >
-          <ShoppingCart size={16} />
+          <ShoppingCart size={18} />
           <span className="hidden sm:inline">Caja / Mostrador</span>
           {carrito.length > 0 && (
-            <span className="ml-1 px-1.5 py-0.5 rounded-full bg-white text-emerald-800 text-[10px] font-black leading-none">
+            <span className="absolute -top-1 -right-1 sm:static sm:ml-1 px-1.5 py-0.5 rounded-full bg-white text-emerald-800 text-[10px] font-black leading-none shadow-xs">
               {carrito.length}
             </span>
           )}
         </button>
 
         {/* Identidad del usuario con badge sutil */}
-        <div className="flex items-center gap-2 text-slate-300 text-sm">
+        <div className="hidden sm:flex items-center gap-2 text-slate-300 text-sm">
           <div className="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-slate-200 text-xs font-bold">
             {nombreMostrar.charAt(0).toUpperCase()}
           </div>
-          <div className="hidden sm:flex flex-col text-left">
+          <div className="flex flex-col text-left">
             <span className="font-medium text-slate-200 truncate max-w-[150px] leading-tight">
               {nombreMostrar}
             </span>
@@ -150,11 +154,13 @@ export default function Header({ onMenuToggle }) {
 
         {/* Botón de cerrar sesión */}
         <button
+          type="button"
           onClick={logout}
-          className="flex items-center gap-1.5 text-slate-400 hover:text-red-400 hover:bg-slate-700/50 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ml-1"
+          aria-label="Cerrar sesión"
+          className="min-w-12 min-h-12 flex items-center justify-center gap-1.5 text-slate-400 hover:text-red-400 hover:bg-slate-700/50 px-2 sm:px-2.5 rounded-lg text-xs font-medium transition-colors"
           title="Cerrar sesión"
         >
-          <LogOut size={16} />
+          <LogOut size={18} />
           <span className="hidden md:inline">Salir</span>
         </button>
       </div>

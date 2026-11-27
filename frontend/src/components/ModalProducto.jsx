@@ -88,21 +88,27 @@ export default function ModalProducto({ producto, onGuardar, onCerrar }) {
     }
   }
 
-  const cls = 'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400'
+  const cls = 'w-full min-h-12 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400'
 
   return (
-    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-producto-titulo"
+      className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4"
+    >
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto overflow-x-hidden">
 
         {/* Encabezado */}
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="font-bold text-lg">
+        <div className="flex items-center justify-between pl-6 pr-3 py-4 border-b">
+          <h2 id="modal-producto-titulo" className="font-bold text-lg">
             {esEdicion ? 'Editar producto' : 'Nuevo producto'}
           </h2>
           <button
             type="button"
+            aria-label="Cerrar modal de producto"
             onClick={onCerrar}
-            className="text-gray-400 hover:text-gray-700 text-xl leading-none"
+            className="min-w-12 min-h-12 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 text-xl leading-none transition-colors"
           >
             ✕
           </button>
@@ -138,13 +144,14 @@ export default function ModalProducto({ producto, onGuardar, onCerrar }) {
                 onChange={cambiar}
                 type="text"
                 placeholder="Escribe o escanea"
-                className={`${cls} flex-1`}
+                className={`${cls} flex-1 min-w-0`}
               />
               <button
                 type="button"
                 onClick={() => setEscaneando(prev => !prev)}
                 title={escaneando ? 'Cerrar cámara' : 'Escanear con cámara'}
-                className={`shrink-0 px-3 rounded-lg border text-lg transition-colors ${
+                aria-label={escaneando ? 'Cerrar cámara' : 'Escanear código de barras con cámara'}
+                className={`min-w-12 min-h-12 flex items-center justify-center shrink-0 rounded-lg border text-lg transition-colors ${
                   escaneando
                     ? 'bg-violet-100 border-violet-400 text-violet-700'
                     : 'border-gray-300 text-gray-500 hover:border-violet-400 hover:text-violet-600'
@@ -237,14 +244,14 @@ export default function ModalProducto({ producto, onGuardar, onCerrar }) {
             <button
               type="button"
               onClick={onCerrar}
-              className="flex-1 border border-gray-300 text-gray-700 py-2.5 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+              className="flex-1 min-h-12 border border-gray-300 text-gray-700 py-2.5 rounded-lg hover:bg-gray-50 transition-colors text-sm"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={guardando}
-              className="flex-1 bg-violet-600 hover:bg-violet-700 disabled:bg-gray-200 text-white py-2.5 rounded-lg transition-colors text-sm font-medium"
+              className="flex-1 min-h-12 bg-violet-600 hover:bg-violet-700 disabled:bg-gray-200 text-white py-2.5 rounded-lg transition-colors text-sm font-medium"
             >
               {guardando ? 'Guardando...' : 'Guardar'}
             </button>
