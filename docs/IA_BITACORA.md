@@ -992,3 +992,19 @@ Comando: `.\.venv\Scripts\pytest.exe tests/unit/test_domain_unit.py::test_regist
 - `git diff --check`: exit `0`.
 
 > **La IA asistió en la parametrización de reportes Lighthouse, configuración de artefactos CI y actualización documental; las decisiones y validación final corresponden al equipo humano.**
+
+---
+
+## Sesión 2026-11-27 — Cierre documental de Sprint 2 (Web móvil responsive `S2-1`..`S2-4`)
+
+### Evidencia verificada de cierre
+
+- **Commit de implementación:** `2ee5ddc` (`2ee5ddc15ec4678281ea1cb960d4f7a327af25ac`) — `test(mobile): enforce 360px responsive QA in CI`.
+- **GitHub Actions Run `#46019358053`:** https://github.com/Tomasberserk/GESTION_INVENTARIO_INTELIGENTE/actions/runs/46019358053 (`completed / success`).
+  - `Frontend Voice FSM Tests & Production Build` (`job/140574655695`, `1m28s`): **`success`** (`4/4` Voice FSM, SPA build `3.86s`, Playwright público **`3 passed / 1 skipped`** en `5.3s`, Lighthouse móvil accesibilidad **`95 / 90 / 90`** en `/`, `/login` y `/registro` con build aislado en `/tmp`).
+  - `Lint, Boundary Check & Backend Tests` (`job/140574656222`, `1m25s`): **`success`** (Stages 1..6 + `backend-coverage-xml` ID `15206822949`).
+- **Artefacto móvil descargable:** **`frontend-mobile-qa-evidence`** (`Artifact ID: 15206887974`, `7 files uploaded`, `355,028 bytes`, `expired: false`).
+- **Archivo histórico creado:** `docs/audits/planes-cerrados/2026-11-27-sprint-2-web-movil-responsive.md` (con `S2-4` marcado como `[x]` y detalle íntegro de `S2-1`..`S2-4`).
+- **`PLAN_ACTIVO.md`:** sección detallada de Sprint 2 reemplazada por referencia breve al archivo cerrado en `docs/audits/planes-cerrados/`.
+
+> **La IA asistió en la verificación y documentación del cierre de Sprint 2; la validación final corresponde al equipo humano.**
