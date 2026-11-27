@@ -159,6 +159,19 @@
       </div>
     </header>
 
+    <div class="section-card" style="border-left: 4px solid var(--amber); background: rgba(245, 158, 11, 0.08);">
+      <span class="badge badge-warn">Nota de vigencia y re-auditoría · 2026-11-27 · Estado histórico: PARTIAL</span>
+      <h2 style="margin-top: 0.75rem; border-bottom: none; padding-bottom: 0;">Corrección documental sobre el dictamen del 07 de noviembre de 2026</h2>
+      <p style="margin-top: 0.5rem; color: var(--text);">
+        Este informe se conserva como registro histórico, pero su dictamen (<code>APROBADO 96.5%</code>, <code>Conformant 94.8%</code> y la afirmación de <em>"migración 013 sin FKs cruzadas"</em>) fue <strong>superado por la auditoría técnica del 21 de noviembre de 2026</strong> (<code>docs/audits/INFORME_AUDITORIA_MVP_2026-11-21.html</code>) y la matriz vigente (<code>docs/audits/MATRIZ_EVIDENCIA_GOBERNANZA.md</code>):
+      </p>
+      <ul style="margin: 0.75rem 0 0 1.25rem; color: var(--muted);">
+        <li><strong>DAT-03 sigue abierto en código:</strong> <code>app/models.py</code> conserva 4 <code>ForeignKey("empresas.id")</code> cruzando módulos hasta que backend ejecute <code>S3-2</code>/<code>S3-3</code> (migración <code>014</code>, aprobada en <code>ADR-006</code>).</li>
+        <li><strong>ARC-03 / ARC-08 sigue abierto:</strong> 7 routers en <code>app/routers/</code> aún importan <code>app.services.*</code> (pendiente Sprint 4).</li>
+        <li><strong>Evidencia CI vigente reproducible:</strong> GitHub Actions Run <code>#45914762624</code> (<code>98 passed, 0 skipped</code> en PostgreSQL 16, cobertura <code>81.20%</code> global y <code>100%</code> en <code>pos_ventas</code>, <code>lint-imports</code> <code>7/7 KEPT</code>) y Run <code>#46019358053</code> (móvil 360px público + Lighthouse <code>95/90/90</code>).</li>
+      </ul>
+    </div>
+
     <div class="kpi-grid">
       <div class="kpi-card">
         <div class="kpi-label">Tests Automatizados (Backend + Voz)</div>

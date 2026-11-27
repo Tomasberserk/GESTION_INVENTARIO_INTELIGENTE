@@ -21,9 +21,9 @@ gateways. The system uses a single relational PostgreSQL 16 database.
 ## Ready when
 
 - [x] Every table has an explicit, single owning module assigned in `models.md`
-- [x] Zero foreign keys cross module boundaries per **ADR-004**
+- [ ] Zero foreign keys cross module boundaries (`PARTIAL`: migration `013` removed 3 FKs per **ADR-004**; 4 tenancy FKs toward `empresas.id` remain open under `DAT-03` until migration `014` per **ADR-006**)
 - [x] All 8 active tables are documented; zero ghost ERP tables exist
-- [x] Migrations 001 through 012 are documented in `migrations.md`
+- [x] Migrations 001 through 013 are documented in `migrations.md`
 
 ---
 

@@ -33,7 +33,7 @@ flowchart TD
     P3["PHASE 3: DETAILED DESIGN<br/>08-uml/ -> 09-modules/ -> 12-ux-ui/<br/>C4 diagrams, 6 module facades & screen wireframes"]
     G3(["Gate 3: Sprint-Planning Kickoff [APPROVED ✅]"])
     P4["PHASE 4: IMPLEMENTATION & OPERATIONS<br/>10-devops/ -> 11-quality/ -> 13-operations/<br/>CI/CD pipeline, test pyramid, JSON logging & runbook"]
-    G4(["Gate 4: Go / No-Go Production Release [READY 🚀]"])
+    G4(["Gate 4: Go / No-Go Production Release [IN STABILIZATION — PARTIAL]"])
 
     P0 -.-> P1 --> G1 --> P2 --> G2 --> P3 --> G3 --> P4 --> G4
 
@@ -57,9 +57,9 @@ flowchart TD
 | `02` | [`02-domain/`](./02-domain/README.md) | Bounded contexts, entities, business rules `BR-01` to `BR-12` |
 | `03` | [`03-product/`](./03-product/README.md) | Problem framing for tenderos in Neiva and product vision |
 | `04` | [`04-requirements/`](./04-requirements/README.md) | Backlog `HU-01` to `HU-12`, `NFR-01` to `NFR-10`, traceability |
-| `05` | [`05-architecture/`](./05-architecture/README.md) | Modular monolith design, layered structure, ADRs 001 to 004 |
-| `06` | [`06-data/`](./06-data/README.md) | Database conventions, Table Ownership, Alembic migrations 001-012 |
-| `07` | [`07-api/`](./07-api/README.md) | REST conventions (`/api/v1`) and consolidated OpenAPI 3.0 spec |
+| `05` | [`05-architecture/`](./05-architecture/README.md) | Modular monolith design, layered structure, ADRs 001 to 004 and ADR-006 |
+| `06` | [`06-data/`](./06-data/README.md) | Database conventions, Table Ownership, Alembic migrations 001-013 |
+| `07` | [`07-api/`](./07-api/README.md) | REST conventions (`/api/v1`) and consolidated OpenAPI 3.1.0 spec |
 | `08` | [`08-uml/`](./08-uml/README.md) | C4 Context, C4 Container, POS Checkout & Voice Turn sequences |
 | `09` | [`09-modules/`](./09-modules/README.md) | The 6 module catalogs, facades, data models, and runbooks |
 | `10` | [`10-devops/`](./10-devops/README.md) | Local setup (< 1h), environments matrix, GitHub Actions CI/CD |

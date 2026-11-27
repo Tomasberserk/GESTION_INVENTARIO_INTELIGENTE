@@ -1163,3 +1163,21 @@ teclado + LCP), YA que el guion usa las tomas reales. Luego QA1 (Gemini) del lan
 >   - **Riesgo:** Bajo.
 >   - **Comando exacto de verificación:** `.\.venv\Scripts\ruff.exe check app && .\.venv\Scripts\lint-imports.exe && .\.venv\Scripts\pytest.exe tests/ --cov=app --cov-fail-under=80 && .\.venv\Scripts\pytest.exe tests/ --cov=app/pos_ventas --cov-fail-under=90`
 >   - **Criterio de salida medible:** 0 hallazgos críticos abiertos y 100% de las 9 métricas de salida verificadas con artefacto fechado.
+
+
+---
+
+> [JAVELA PROPONE] Cierre de deriva documental, matriz de gobernanza y dependencias para estabilización MVP (2026-11-27)
+> **Motivo:** Se auditó la documentación SDD (`00`–`13`), `AGENTS.md`, `PLAN_ACTIVO.md` y los informes históricos frente al código real (`app/models.py`, `app/main.py`, `app/routers/*.py`, `.github/workflows/ci.yml`, `alembic/versions/`) sin tocar código de producción, migraciones ni frontend.
+> **Entregables documentales listos (solo documentación):**
+> - Creada [`docs/audits/MATRIZ_EVIDENCIA_GOBERNANZA.md`](docs/audits/MATRIZ_EVIDENCIA_GOBERNANZA.md) con estados verificables (`PASS`, `PARTIAL`, `FAIL`, `NO VERIFICADO`).
+> - Creada [`docs/audits/GUIA_DEMO_TENDERO_MVP.md`](docs/audits/GUIA_DEMO_TENDERO_MVP.md) para el flujo `registro → login → crear producto → venta → descuento de stock → dashboard → logout`.
+> - Corregida deriva verificable (`00-sdd-guide.md`, `05-architecture/README.md`, `06-data/README.md`, `07-api/README.md`) y anotados como históricos `docs/INFORME_PRUEBAS_UNITARIAS_Y_E2E_APA.md` y `docs/INFORME_EVALUACION_ESTRICTO_RUBRICA.html`.
+> - Revisada y ampliada [`04-requirements/traceability-matrix.md`](04-requirements/traceability-matrix.md) incorporando mapa explícito `BR-01..BR-12` y estados por requisito.
+> - **Nota `ADR-006`:** Ya existía en `main` con estado `Accepted` (commit `1400acc`, enmienda `S3-1B`), por lo que se conservó intacto sin degradarlo a borrador.
+> **Propuesta / Dependencias abiertas para cierre del MVP (ninguna marcada como completada sin evidencia):**
+> 1. **Backend (`S3-2`..`S3-5`):** Ejecutar desacople de 4 FKs cruzadas (`DAT-03`) y relaciones ORM en `app/models.py`, migraciones reversibles `014` y `015` con `upgrade -> downgrade -1 -> upgrade` en PostgreSQL/CI, y validación `404` uniforme vía `AuthTenancyFacade`.
+> 2. **Backend (`S4-1`..`S4-5`):** Migrar los 7+ routers que aún importan `app.services.*` hacia las 6 fachadas públicas (`ARC-03`/`ARC-08`), añadir regla `app.routers` en `.importlinter` con demo de fallo deliberado, y alinear `OBS-02`/`OBS-03` (`/health` + métricas) y `DEV-01`/`DEV-03` (`package` Docker + `deploy` en CI).
+> 3. **Backend / QA (NFRs `NO VERIFICADO`):** Producir evidencia fechada o acordar alcance de sustentación para `NFR-01` (Locust p95 < 300 ms), `NFR-06` (latencia real STT < 3 s), validación `openapi-spec.yaml` vs `app.openapi()` y verificación de payload `.xlsx` en `HU-12`.
+> 4. **Frontend / Diseño:** Validar compatibilidad de `Ventas.jsx` con snapshots de migración `015`, decidir si se habilita Playwright móvil autenticado en CI, y capturar evidencia visual (pantallazos/video con datos sintéticos) siguiendo `docs/audits/GUIA_DEMO_TENDERO_MVP.md`.
+> **Impacto:** Elimina afirmaciones técnicas sin evidencia en la documentación SDD y deja una hoja de ruta clara y verificable para el cierre paralelo de backend y frontend antes de la sustentación.

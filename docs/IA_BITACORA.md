@@ -1040,3 +1040,35 @@ Comando: `.\.venv\Scripts\pytest.exe tests/unit/test_domain_unit.py::test_regist
 6. **Validación documental:** `0` modificaciones en `ADR-001`–`ADR-005`, `0` cambios en código/migraciones/pruebas, `git diff --check` exit `0`.
 
 > **La IA asistió en la redacción de la enmienda `S3-1B` y sincronización documental; las decisiones técnicas fueron aprobadas y son validadas por el equipo humano.**
+
+
+---
+
+## Sesión 2026-11-27 — Auditoría Documental, Matriz de Gobernanza, Trazabilidad y Guía Demo MVP (Frente Javela)
+
+### Alcance y restricciones verificadas
+
+- **Rol:** Documentación, trazabilidad y evidencia de evaluación (paralelo a backend y diseño).
+- **Restricción cumplida:** **0 cambios** en `app/`, `alembic/` ni `frontend/`.
+- **Nota sobre `ADR-006` (DAT-03):** Al auditar el repositorio base (`1400acc`), se verificó que `05-architecture/decisions/records/ADR-006-aislamiento-tenancy-uuid-fachadas.md` ya había sido creado, enmendado y aprobado como **`Accepted`** en `S3-1B`. En cumplimiento de `05-architecture/decisions/README.md` (no degradar ni modificar silenciosamente ADRs aceptados), se preservó intacto y se documentó su estado (`decisión: PASS`, `implementación 014/015: NO VERIFICADO`).
+
+### Artefactos creados y actualizados
+
+1. **`docs/audits/MATRIZ_EVIDENCIA_GOBERNANZA.md` (creado):** Matriz completa con estados estrictos (`PASS`, `PARTIAL`, `FAIL`, `NO VERIFICADO`) para `AGENTS.md`, `PLAN_ACTIVO.md`, `00-sdd-guide.md`, `00-governance/`, `04-requirements/`, `05-architecture/`, `06-data/`, `07-api/`, `10-devops/`, `11-quality/`, `13-operations/`, informes históricos y lista explícita de dependencias para Backend y Frontend.
+2. **`docs/audits/GUIA_DEMO_TENDERO_MVP.md` (creado):** Guion reproducible UI + API `/api/v1` del flujo `registro → login → crear producto → venta → descuento de stock → dashboard → logout`, trazado a `tests/end_to_end/test_store_journey_e2e.py` (Run `#45914762624`), `HU`/`BR`/`TC`, distinguiendo evidencia automatizada (`PASS`/`PARTIAL`) de grabación final en vivo (`NO VERIFICADO`).
+3. **Corrección de deriva documental verificable (`DOC-12` e informes históricos):**
+   - `00-sdd-guide.md`: actualizado de migraciones `001-012` → `001-013`, `OpenAPI 3.0` → `OpenAPI 3.1.0`, `ADRs 001 to 004` → `ADRs 001 to 004 and ADR-006`, y Gate 4 de `READY 🚀` → `IN STABILIZATION — PARTIAL`.
+   - `05-architecture/README.md`: actualizado para incluir `ADR-006`.
+   - `06-data/README.md`: actualizado de `001 through 012` → `001 through 013` y desmarcado el check de `0` FKs cruzadas (`PARTIAL` hasta cerrar `DAT-03` en migración `014`).
+   - `07-api/README.md`: actualizado de `OpenAPI 3.0` → `OpenAPI 3.1.0` y marcada la validación automática contra rutas vivas como `NO VERIFICADO`.
+   - `docs/INFORME_PRUEBAS_UNITARIAS_Y_E2E_APA.md` y `docs/INFORME_EVALUACION_ESTRICTO_RUBRICA.html`: agregadas notas visibles de vigencia y re-auditoría sin borrar registros históricos, remitiendo a la auditoría del `2026-11-21`, `MATRIZ_EVIDENCIA_GOBERNANZA.md` y los Runs verificables `#45914762624` y `#46019358053`.
+4. **`04-requirements/traceability-matrix.md` (revisado y ampliado):** Incorporado mapa explícito `BR-01..BR-12` (Tabla 2), columna de `BR` y estados (`PASS`/`PARTIAL`/`NO VERIFICADO`) en `HU-01..HU-12` y `NFR-01..NFR-10`, verificando existencia física de `17/17` nodos `pytest` y `12/12` archivos `TC-001..TC-012`.
+5. **`PLAN_ACTIVO.md` (actualizado):** Agregado bloque `> [JAVELA PROPONE]` con cierre de deriva documental y lista de dependencias hacia Backend y Frontend, sin marcar ninguna tarea de implementación como completada sin evidencia.
+
+### Verificación ejecutada en esta sesión
+
+- Inspección directa de `app/models.py` (confirmadas 4 FKs cruzadas hacia `empresas.id` en líneas 169, 214, 281, 350), `app/main.py:140-154` (`HEALTH_REQUIRE_REDIS`) y `app/routers/*.py` (7 routers importando `app.services.*`).
+- Verificación de existencia física de `17/17` funciones `pytest` referenciadas en `04-requirements/traceability-matrix.md`, `12/12` archivos `11-quality/cases/TC-*.md` y `7/7` contratos en `.importlinter`.
+- `git diff --stat` y `git diff --check` confirmando cambios exclusivamente en documentación y `0` líneas modificadas en `app/`, `alembic/` o `frontend/`.
+
+> **Declaración de uso de IA:** En esta sesión se utilizó **Antigravity (Google DeepMind / Gemini)** para lectura cruzada de documentación, verificación de existencia de nodos de prueba y contratos en el repositorio, redacción de `MATRIZ_EVIDENCIA_GOBERNANZA.md`, `GUIA_DEMO_TENDERO_MVP.md`, ampliación de `traceability-matrix.md` y corrección de deriva documental. No se ejecutaron despliegues ni se modificó código productivo; la revisión y validación final corresponden al equipo humano.

@@ -10,6 +10,12 @@
   - Juan Pablo Doria Caviedes (`@Doritotes444` — `doriajuan22@gmail.com`)
 - **Fecha de Emisión:** 7 de noviembre de 2026
 
+> **Nota de vigencia y corrección documental (2026-11-27 — Estado del informe histórico: `PARTIAL`):**
+>
+> Este documento conserva la fotografía histórica del 7 de noviembre de 2026 sin borrar evidencia previa. Sin embargo, los resultados de la Tabla 1 (`103` casos / `91` aprobados / `12` omitidos) no cuentan con un ID de corrida CI reproducible y la Tabla 2 reportaba `TC-005` (`test_concurrencia_real.py`) como `APROBADO` pese a que las 12 pruebas dependientes de PostgreSQL fueron omitidas en esa corrida SQLite.
+>
+> **Evidencia vigente verificable:** consultar [`docs/audits/MATRIZ_EVIDENCIA_GOBERNANZA.md`](./audits/MATRIZ_EVIDENCIA_GOBERNANZA.md) y GitHub Actions Run `#45914762624` (commit `91cdf2b`), que ejecutó **`98 passed, 0 failed, 0 skipped`** contra PostgreSQL 16 (`81.20%` cobertura global en `app/`, `100%` en `app/pos_ventas/*`, artefacto `backend-coverage-xml` ID `15162095976`), además de `4/4` Voice FSM y `run_e2e_simulation.py`.
+
 ---
 
 ## 1. Resumen Ejecutivo de Aseguramiento de Calidad (QA)

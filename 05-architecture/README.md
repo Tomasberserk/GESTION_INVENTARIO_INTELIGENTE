@@ -25,7 +25,7 @@ and event brokers (RabbitMQ/Kafka). This system ships as one unified Python/Fast
 
 - [x] Every module from `02-domain/module-boundaries.md` is accounted for
 - [x] Boundary enforcement rules are configured for Python in `.importlinter`
-- [x] ADRs 001 through 004 are accepted and recorded in `decisions/records/`
+- [x] ADRs 001 through 004 and ADR-006 are accepted and recorded in `decisions/records/`
 
 ---
 
