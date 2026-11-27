@@ -608,3 +608,128 @@ Se amplió `test_complete_store_e2e_journey_v1(client)` con TDD pragmático para
   2. La suite de backend ejecute **94 pruebas passed** con **0 skipped por PostgreSQL**.
 
 > **La IA asistió en ejecución controlada y documentación; las decisiones y validación final corresponden al equipo humano.**
+
+
+---
+
+## Sesión 2026-11-25 18:40 — Cierre verificado de S1-3 (Evidencia GitHub Actions Run #45722182377)
+
+| Campo | Detalle |
+|---|---|
+| **Fecha y hora local** | 2026-11-25 18:39–18:40 (`-05:00`, America/Bogota) |
+| **Herramienta / Modelo** | Antigravity (rol ejecutor técnico) · Gemini 4 Neon |
+| **Repositorio** | `C:\Users\merid\Documents\GESTION_INVENTARIO_INTELIGENTE` |
+| **Commit verificado** | `34e4b66` (`34e4b66532e7bbe1d9870222c5d1cb894eb68296`, `test(ci): run PostgreSQL migrations and E2E journey`) en `origin/main` |
+| **Tarea cerrada** | `S1-3` — marcada como `[x]` en `PLAN_ACTIVO.md` (sin cambios de código; sin nuevo commit ni push) |
+
+### Evidencia verificada de GitHub Actions
+
+- **Workflow / Run:** `CI Pipeline — Monolith Governance & QA` · Run `#45722182377` (`https://github.com/Tomasberserk/GESTION_INVENTARIO_INTELIGENTE/actions/runs/45722182377`)
+- **Estado final del workflow:** **`completed / success`** (`2026-11-25T23:32:43Z` → `23:34:12Z`)
+- **Jobs:**
+  - `Lint, Boundary Check & Backend Tests` (`job/139582963076`): **`completed / success`** (`23:32:45Z` → `23:34:11Z`, 16/16 pasos en verde).
+  - `Frontend Voice FSM Tests & Production Build` (`job/139582963525`): **`completed / success`** (`23:32:45Z` → `23:32:58Z`).
+- **Stage 4 — PostgreSQL Migrations (Alembic 001..013):**
+  - Contenedor `postgres:16-alpine` (`PostgreSQL 16.16 on x86_64-pc-linux-musl`) iniciado y validado con `pg_isready` (`Initialize containers: completed / success`).
+  - `alembic upgrade head` aplicó limpiamente las 13 migraciones desde base vacía (`-> 001 -> 002 -> ... -> 012 -> 013, desacoplar_fks_entre_modulos`).
+  - `alembic current` reportó **`013 (head)`**.
+- **Stage 5 — Backend Test Suite & Coverage Report:**
+  - Resultado exacto: **`94 passed, 0 failed, 0 skipped, 7 warnings in 40.86s`** (confirmados los 12 casos PostgreSQL ejecutados sin omitir; en Run `#45298915524` anterior eran `82 passed, 12 skipped`).
+  - Cobertura global `app/`: **`80%`** redondeado (**`79.77%`** exacto: `3,297` statements, `667` miss; sube desde `79.34%` / `681` miss en Run `#45298915524`). *(Nota QA para `S1-5`: faltan al menos `8` statements para superar `80.00%` exacto antes de activar `--cov-fail-under=80`.)*
+  - Cobertura `app/pos_ventas/`: **`100%`** (`30/30` statements); `app/services/venta_service.py`: `80%` (`60` stmts, `12` miss).
+  - Artefacto **`backend-coverage-xml`**: generado y subido (`id: 15072148106`, `9,155 bytes`, `expired: false`, `2026-11-25T23:34:08Z`).
+- **Stage 6 — End-to-End Business Journey Simulation (SQLite):**
+  - `ALL END-TO-END (E2E) TESTS PASSED SUCCESSFULLY! (100% OK)` (`completed / success`).
+
+> **La IA asistió en verificación controlada y documentación; las decisiones y validación final corresponden al equipo humano.**
+
+
+---
+
+## Sesión 2026-11-25 19:39 — Ejecución S1-4 (Orden determinista de locks ADR-003 y contrato HTTP 422 para stock insuficiente)
+
+| Campo | Detalle |
+|---|---|
+| **Fecha y hora local** | 2026-11-25 19:31–19:39 (`-05:00`, America/Bogota) |
+| **Herramienta / Modelo** | Antigravity (rol ejecutor técnico) · Gemini 4 Neon |
+| **Repositorio** | `C:\Users\merid\Documents\GESTION_INVENTARIO_INTELIGENTE` |
+| **Entorno verificado** | `.venv` `Python 3.12.13` · `pytest 7.4.3` · PostgreSQL local `gestion_neiva_test` (rev `013`) |
+| **Tarea ejecutada** | `S1-4` — marcada como `[x]` en `PLAN_ACTIVO.md` |
+| **Decisión humana aplicada** | Stock insuficiente responde **HTTP 422** (`status.HTTP_422_UNPROCESSABLE_ENTITY`); contrato de "producto inexistente / no pertenece a empresa" permanece en **HTTP 400**; sin `POST /logout`; sin adelantar DAT-03 ni cambios de tenancy. |
+| **Archivos modificados** | `app/services/venta_service.py`, `app/inventario/internal/service.py`, `tests/unit/test_domain_unit.py`, `tests/module_integration/test_facades_integration.py`, `tests/test_adversarial_break_system.py`, `PLAN_ACTIVO.md`, `docs/IA_BITACORA.md` (sin commit ni push). |
+
+### 1. Fase TDD RED (pruebas creadas antes de tocar producción)
+
+Comando: `.\.venv\Scripts\pytest.exe tests/unit/test_domain_unit.py::test_registrar_venta_orders_detalles_by_producto_id_deterministically_unit tests/module_integration/test_facades_integration.py::test_checkout_when_stock_insufficient_returns_422_and_preserves_stock -v --tb=short`
+- **Resultado RED:** **`2 failed, 1 warning in 0.80s`** (exit `1`):
+  1. `test_registrar_venta_orders_detalles_by_producto_id_deterministically_unit`: `AssertionError` — invocó `[UUID('ffffffff-...'), UUID('00000000-...')]` en lugar de `[UUID('00000000-...'), UUID('ffffffff-...')]`.
+  2. `test_checkout_when_stock_insufficient_returns_422_and_preserves_stock`: `AssertionError` — `assert 400 == 422`.
+
+### 2. Cambio mínimo de contrato (`400 → 422` y orden determinista)
+
+- `app/services/venta_service.py` (`registrar_venta`): ordena `data.detalles` mediante `sorted(data.detalles, key=lambda item: str(item.producto_id))` antes de invocar `InventarioFacade.validar_y_descontar_stock_atomic`, evitando deadlocks multi-ítem en `SELECT ... FOR UPDATE` (ADR-003).
+- `app/inventario/internal/service.py` (`lock_and_deduct_stock`): cambia únicamente la excepción de stock insuficiente (`producto.cantidad_actual < cantidad`) de `HTTP_400_BAD_REQUEST` a `status.HTTP_422_UNPROCESSABLE_ENTITY`; se conserva intacto el `400` para producto inexistente/cross-tenant y el rollback transaccional en `venta_service`.
+- `tests/test_adversarial_break_system.py` (`test_ataque_concurrente_hilos_sobreventa_stock_uno`): alineada la expectativa de rechazo por stock insuficiente de `400` a `422` (se mantuvieron en `400` las pruebas de producto cross-tenant y soft-deleted).
+
+### 3. Verificación final (GREEN, PostgreSQL, lint y cobertura)
+
+| Verificación | Comando | Resultado | Tiempo | Exit |
+|---|---|---|---:|---:|
+| **Pruebas nuevas/modificadas** | `pytest tests/unit/test_domain_unit.py tests/module_integration/test_facades_integration.py tests/test_adversarial_break_system.py::test_ataque_concurrente_hilos_sobreventa_stock_uno -v` | **`8 passed, 3 warnings`** | `3.40s` | `0` |
+| **Concurrencia PostgreSQL** | `pytest tests/integration/postgres/ -v` | **`5 passed, 1 warning`** | `1.81s` | `0` |
+| **Suite completa** | `pytest tests -q -rs --maxfail=1` | **`96 passed, 0 failed, 0 skipped, 9 warnings`** | `44.72s` | `0` |
+| **Suite + cobertura** | `pytest tests --cov=app --cov-report=term-missing -q -rs --maxfail=1` | **`96 passed, 0 failed, 0 skipped, 9 warnings`** | `50.40s` | `0` |
+| **Ruff / Import-Linter / Diff** | `ruff check app` + `lint-imports` + `git diff --check` | `All checks passed!` · `7 kept, 0 broken` · limpio | n/a | `0` |
+
+### 4. Cobertura observada (antes vs después de S1-4)
+
+- **Antes (local S1-2/S1-3):** `3,297` stmts, `668` miss → `80%` redondeado (**`79.74%`** exacto); `app/pos_ventas/` = `100%` (`30/30`); `app/services/venta_service.py` = `83%` (`60` stmts, `10` miss).
+- **Después (local S1-4):** `3,298` stmts, `668` miss → `80%` redondeado (**`79.75%`** exacto); `app/pos_ventas/` = **`100%`** (`30/30`); `app/services/venta_service.py` = **`84%`** (`61` stmts, `10` miss).
+
+> **La IA asistió en ejecución controlada, pruebas TDD y documentación; las decisiones y validación final corresponden al equipo humano.**
+
+
+---
+
+## Sesión 2026-11-26 18:39 — Ejecución S1-5A (Cobertura de fachadas `>=81%` local y compuertas CI `80%`/`90%`)
+
+| Campo | Detalle |
+|---|---|
+| **Fecha y hora local** | 2026-11-26 18:35–18:40 (`-05:00`, America/Bogota) |
+| **Herramienta / Modelo** | Antigravity (rol ejecutor técnico) · Gemini 4 Neon |
+| **Repositorio** | `C:\Users\merid\Documents\GESTION_INVENTARIO_INTELIGENTE` |
+| **Entorno verificado** | `.venv` `Python 3.12.13` · `pytest 7.4.3` · `pytest-cov 6.3.0` · `coverage 7.17.4` · PostgreSQL local `gestion_neiva_test` |
+| **Tarea ejecutada** | `S1-5A` — **`S1-5` permanece `[ ]`** en `PLAN_ACTIVO.md` hasta confirmar corrida verde real en GitHub Actions |
+| **Archivos modificados** | Únicamente `tests/module_integration/test_facades_integration.py`, `.github/workflows/ci.yml`, `PLAN_ACTIVO.md` y `docs/IA_BITACORA.md` (sin commit ni push). |
+| **Restricciones respetadas** | Cero cambios a código de producción (`app/`), frontend, migraciones, dependencias, `.importlinter`, Docker ni contratos API; cero llamadas a LLM, Redis o servicios externos. |
+
+### 1. Pruebas de integración de fachadas añadidas (`tests/module_integration/test_facades_integration.py`)
+
+1. `test_reportes_facade_construir_resumen_diario_returns_immutable_dto`: verifica que `ReportesFacade.construir_resumen_diario(...)` delega al servicio interno sin acceso ORM directo, devuelve `DailyMetricsDTO` con `empresa_id`, `ventas_hoy` e `ingresos_hoy` exactos y rechaza mutación (`FrozenInstanceError`).
+2. `test_agente_ia_facade_procesar_turno_delegates_without_external_calls`: parchea `AgentOrchestrator.procesar_mensaje` con `AsyncMock`, valida que `AgenteIaFacade.procesar_turno(...)` delega exactamente `mensaje`, `current_user`, `db` y `conversation_id`, y comprueba la inmutabilidad del contrato `AgentTurnResponseDTO`. Evidencia de cero llamadas externas: `AgentOrchestrator.__init__` inicializa `_session_store=None` e `_intent_provider=None` de forma perezosa y `procesar_mensaje` es interceptado por `AsyncMock`, sin instanciar LLM, Redis ni BD.
+
+### 2. Cobertura exacta local (antes vs después) y compuertas verificadas
+
+| Métrica | Antes (`S1-4`) | Después (`S1-5A`) | Delta |
+|---|---:|---:|---:|
+| **Statements totales `app/`** | `3,298` | `3,298` | `0` |
+| **Statements sin cubrir (`Miss`)** | `668` | **`621`** | **`-47`** |
+| **Cobertura global exacta (`--precision=2`)** | `79.75%` | **`81.17%`** | **`+1.42%`** |
+| **`app/reportes_analytics/*`** | `0.00%` (`23` miss) | **`100.00%`** (`0` miss) | `+100.00%` |
+| **`app/agente_ia/*`** | `0.00%` (`24` miss) | **`100.00%`** (`0` miss) | `+100.00%` |
+| **`app/pos_ventas/*` (`--fail-under=90`)** | `100.00%` (`30/30`) | **`100.00%`** (`30/30`) | `0.00%` |
+
+- `coverage report --precision=2 --fail-under=81`: **`81.17%`** (exit `0`).
+- `coverage report --include="app/pos_ventas/*" --fail-under=90`: **`100%`** (`30/30`, exit `0`).
+
+### 3. Compuertas configuradas en `.github/workflows/ci.yml` (`Stage 5`)
+
+- `pytest tests/ -q --cov=app --cov-report=xml --cov-report=term-missing --cov-fail-under=80`
+- `coverage report --include="app/pos_ventas/*" --fail-under=90` (sin re-ejecutar `pytest`, leyendo el archivo `.coverage` recién generado)
+- Conservado el artefacto `backend-coverage-xml` (`coverage.xml`, `if: always()`).
+
+### 4. Condición pendiente para cerrar `S1-5`
+
+- Commit selectivo + push autorizado (incluyendo `S1-4` + `S1-5A`) y verificación de una corrida verde real en GitHub Actions donde pasen ambas compuertas (`--cov-fail-under=80` global y `--fail-under=90` en `app/pos_ventas/*`) con `98 passed / 0 skipped` y artefacto `backend-coverage-xml`.
+
+> **La IA asistió en ejecución controlada, pruebas de integración y documentación; las decisiones y validación final corresponden al equipo humano.**

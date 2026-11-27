@@ -65,7 +65,8 @@ jobs:
           SECRET_KEY: "ci-test-secret-key-not-for-production-use-only"
           SUPERADMIN_KEY: "ci-superadmin-test-key"
         run: |
-          pytest tests/ -q --cov=app --cov-report=xml --cov-report=term-missing
+          pytest tests/ -q --cov=app --cov-report=xml --cov-report=term-missing --cov-fail-under=80
+          coverage report --include="app/pos_ventas/*" --fail-under=90
 
       - name: Upload Backend Coverage Artifact (coverage.xml)
         if: always()

@@ -38,7 +38,7 @@ def lock_and_deduct_stock(
 
     if producto.cantidad_actual < cantidad:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=(
                 f"Stock insuficiente para '{producto.nombre}'. "
                 f"Disponible: {producto.cantidad_actual}, "

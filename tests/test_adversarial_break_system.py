@@ -181,7 +181,7 @@ def test_ataque_concurrente_hilos_sobreventa_stock_uno():
     En PostgreSQL real vivo:
     Producto tiene stock = 1.0.
     4 peticiones concurrentes sincronizadas con Barrier(4) intentan vender 1 unidad.
-    GARANTÍA: Solo 1 pasa (201), las otras 3 rebotan con 400 (Stock insuficiente).
+    GARANTÍA: Solo 1 pasa (201), las otras 3 rebotan con 422 (Stock insuficiente, ADR-003).
     Stock final = 0.0, JAMÁS negativo.
     """
     engine = create_engine(POSTGRES_URL, pool_size=10, max_overflow=5)
@@ -221,7 +221,7 @@ def test_ataque_concurrente_hilos_sobreventa_stock_uno():
             concurrent.futures.wait(futuros)
 
         ventas_exitosas = [c for c in codigos if c == 201]
-        ventas_rechazadas = [c for c in codigos if c == 400]
+        ventas_rechazadas = [c for c in codigos if c == 422]
 
         assert len(ventas_exitosas) == 1, f"Debió ganar exactamente 1 venta, pasaron: {codigos}"
         assert len(ventas_rechazadas) == (num_ventas - 1), f"Debieron rebotar {num_ventas - 1}: {codigos}"

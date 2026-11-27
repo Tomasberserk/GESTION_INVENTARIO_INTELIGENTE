@@ -52,7 +52,9 @@ def registrar_venta(
     total_venta = Decimal("0.00")
 
     try:
-        for item in data.detalles:
+        # Orden determinista por producto_id antes de adquirir locks SELECT FOR UPDATE (ADR-003)
+        detalles_ordenados = sorted(data.detalles, key=lambda item: str(item.producto_id))
+        for item in detalles_ordenados:
             stock_dto = InventarioFacade.validar_y_descontar_stock_atomic(
                 empresa_id=empresa_id,
                 producto_id=item.producto_id,
