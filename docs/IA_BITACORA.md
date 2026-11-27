@@ -733,3 +733,37 @@ Comando: `.\.venv\Scripts\pytest.exe tests/unit/test_domain_unit.py::test_regist
 - Commit selectivo + push autorizado (incluyendo `S1-4` + `S1-5A`) y verificación de una corrida verde real en GitHub Actions donde pasen ambas compuertas (`--cov-fail-under=80` global y `--fail-under=90` en `app/pos_ventas/*`) con `98 passed / 0 skipped` y artefacto `backend-coverage-xml`.
 
 > **La IA asistió en ejecución controlada, pruebas de integración y documentación; las decisiones y validación final corresponden al equipo humano.**
+
+
+---
+
+## Sesión 2026-11-26 19:11 — Cierre verificado de S1-5 y Sprint 1 (Evidencia GitHub Actions Run #45914762624)
+
+| Campo | Detalle |
+|---|---|
+| **Fecha y hora local** | 2026-11-26 19:10–19:11 (`-05:00`, America/Bogota) |
+| **Herramienta / Modelo** | Antigravity (rol ejecutor técnico) · Gemini 4 Neon |
+| **Repositorio** | `C:\Users\merid\Documents\GESTION_INVENTARIO_INTELIGENTE` |
+| **Commit verificado** | `91cdf2b` (`91cdf2b9daa9c300f21609ed288f5e155907ecdb`, `test(quality): enforce coverage gates and checkout contracts`) en `origin/main` |
+| **Tarea cerrada** | `S1-5` — marcada como `[x]` en `PLAN_ACTIVO.md` (**Sprint 1 completo `S1-1`..`S1-5`**; sin cambios de código ni nuevo commit/push) |
+
+### Evidencia verificada de GitHub Actions
+
+- **Workflow / Run:** `CI Pipeline — Monolith Governance & QA` · Run `#45914762624` (`https://github.com/Tomasberserk/GESTION_INVENTARIO_INTELIGENTE/actions/runs/45914762624`)
+- **Estado final del workflow:** **`completed / success`** (`2026-11-27T00:06:16Z` → `00:07:44Z`)
+- **Job `Lint, Boundary Check & Backend Tests`** (`job/140231210895`): **`completed / success`** (`00:06:18Z` → `00:07:43Z`, 16/16 pasos en verde):
+  - `Stage 1..3`: `ruff`, `compileall`, `lint-imports` (`7 kept, 0 broken`) en verde.
+  - `Stage 4 — PostgreSQL Migrations (Alembic 001..013)`: `postgres:16-alpine` saludable; `alembic upgrade head` aplicó `001`→`013` desde base vacía; `alembic current` confirmó **`013 (head)`**.
+  - `Stage 5 — Backend Test Suite & Coverage Report`:
+    - Pytest: **`98 passed, 0 failed, 0 skipped, 9 warnings in 43.01s`**.
+    - Compuerta global `--cov-fail-under=80`: **`Required test coverage of 80% reached. Total coverage: 81.20%`** (`3,298` statements, `620` miss).
+    - Compuerta `app/pos_ventas/*` (`--fail-under=90`): **`TOTAL 30 0 100%`** (`coverage report --include="app/pos_ventas/*" --fail-under=90`, exit `0`).
+    - Artefacto **`backend-coverage-xml`**: generado y subido (`id: 15162095976`, `9,103 bytes`, `expired: false`, `2026-11-27T00:07:40Z`).
+  - `Stage 6 — End-to-End Business Journey Simulation (SQLite)`: **`completed / success`**.
+- **Job `Frontend Voice FSM Tests & Production Build`** (`job/140231210740`): **`completed / success`** (`00:06:19Z` → `00:06:47Z`):
+  - `npm ci`: `completed / success`.
+  - `npm run test:voice`: **`4/4 ✅ FSM del Modo Voz verificado`** (`T1`–`T4`).
+  - `npm run build`: **`✓ built in 3.69s`**.
+- **Warnings observados (no bloqueantes, 0 fallos):** 9× `StarletteDeprecationWarning` conocidos en pytest (`1× httpx/httpx2`, `8× HTTP_422_UNPROCESSABLE_ENTITY → HTTP_422_UNPROCESSABLE_CONTENT`) y aviso informativo de GitHub Actions sobre Node.js 20 en actions v4/v5.
+
+> **La IA asistió en verificación controlada y documentación; las decisiones y validación final corresponden al equipo humano.**
