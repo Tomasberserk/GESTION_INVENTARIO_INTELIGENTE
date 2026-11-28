@@ -1113,4 +1113,10 @@ Comando: `.\.venv\Scripts\pytest.exe tests/unit/test_domain_unit.py::test_regist
 - **Validación PostgreSQL posterior:** el servicio local fue iniciado y la integración ejecutó el ciclo real `013 → 014 → rollback seguro ante huérfanos → 013 → 014`, con **`1 passed`**. La batería final combinada arrojó **`22 passed, 1 warning in 7.29s`**, junto con `ruff`, `compileall`, `lint-imports` (`7 kept`) y `git diff --check` en verde.
 - **Estado:** S3-2 queda completado localmente. `DAT-03` sigue abierto hasta completar S3-3, S3-4 y S3-5. No se modificaron archivos fuera de alcance.
 
+### Confirmación CI posterior
+
+- **Commit:** `932eac0` (`feat(tenancy): reconcile cross-module foreign keys`).
+- **GitHub Actions:** [Run `#46092499900`](https://github.com/Tomasberserk/GESTION_INVENTARIO_INTELIGENTE/actions/runs/46092499900) — **`completed / success`**. Los jobs backend y frontend completaron en verde; backend validó PostgreSQL/migraciones, cobertura y E2E, mientras frontend validó Voice FSM, build, Playwright móvil, Lighthouse y evidencia descargable.
+- **Corrección de claridad:** el nombre del Stage 4 se actualizó de `Alembic 001..013` a `Alembic head`, pues el comando ejecuta la revisión más reciente y no una numeración fija.
+
 > **La IA asistió en el análisis de causa raíz, TDD, implementación y documentación; la decisión de alcance y validación final corresponden al equipo humano.**

@@ -51,7 +51,7 @@ jobs:
         run: |
           lint-imports
 
-      - name: Stage 4 — PostgreSQL Migrations (Alembic 001..013)
+      - name: Stage 4 — PostgreSQL Migrations (Alembic head)
         env:
           DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/gestion_neiva_test"
         run: |
