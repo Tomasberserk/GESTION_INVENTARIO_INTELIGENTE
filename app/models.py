@@ -113,10 +113,6 @@ class Empresa(AuditMixin, Base):
     trial_expires_at = Column(DateTime(timezone=True), nullable=True)
 
     usuarios = relationship("Usuario", back_populates="empresa", cascade="all, delete-orphan")
-    productos = relationship("Producto", back_populates="empresa", cascade="all, delete-orphan")
-    ventas = relationship("Venta", back_populates="empresa", cascade="all, delete-orphan")
-    soporte_tickets = relationship("SoporteTicket", back_populates="empresa", cascade="all, delete-orphan")
-    agent_commands = relationship("AgentCommand", back_populates="empresa", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"<Empresa {self.nombre_comercial!r}>"
@@ -164,11 +160,8 @@ class Producto(AuditMixin, Base):
     __tablename__ = "productos"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    empresa_id = Column(
-        UUID(as_uuid=True),
-        ForeignKey("empresas.id", ondelete="CASCADE"),
-        nullable=False,
-    )
+    # Plain UUID tenancy reference without cross-module DB ForeignKey (ADR-006 / DAT-03)
+    empresa_id = Column(UUID(as_uuid=True), nullable=False)
     codigo_barras = Column(String(100), nullable=False)
     nombre = Column(String(150), nullable=False)
     precio_costo = Column(Numeric(12, 2), nullable=False)
@@ -186,7 +179,6 @@ class Producto(AuditMixin, Base):
     )
     foto_url = Column(String, nullable=True)
 
-    empresa = relationship("Empresa", back_populates="productos")
     detalles_venta = relationship(
         "DetalleVenta",
         primaryjoin="Producto.id == foreign(DetalleVenta.producto_id)",
@@ -209,18 +201,14 @@ class Venta(AuditMixin, Base):
     __tablename__ = "ventas"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    empresa_id = Column(
-        UUID(as_uuid=True),
-        ForeignKey("empresas.id", ondelete="CASCADE"),
-        nullable=False,
-    )
+    # Plain UUID tenancy reference without cross-module DB ForeignKey (ADR-006 / DAT-03)
+    empresa_id = Column(UUID(as_uuid=True), nullable=False)
     fecha_venta = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     total = Column(Numeric(10, 2), nullable=False, server_default="0.00")
     # Plain UUID reference without cross-module DB ForeignKey constraint (ADR-004 / DAT-03)
     usuario_id = Column(UUID(as_uuid=True), nullable=True)
     vendedor_nombre_snapshot = Column(String(100), nullable=True)
 
-    empresa = relationship("Empresa", back_populates="ventas")
     usuario = relationship(
         "Usuario",
         primaryjoin="foreign(Venta.usuario_id) == Usuario.id",
@@ -276,11 +264,8 @@ class SoporteTicket(AuditMixin, Base):
     __tablename__ = "soporte_tickets"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    empresa_id = Column(
-        UUID(as_uuid=True),
-        ForeignKey("empresas.id", ondelete="CASCADE"),
-        nullable=False,
-    )
+    # Plain UUID tenancy reference without cross-module DB ForeignKey (ADR-006 / DAT-03)
+    empresa_id = Column(UUID(as_uuid=True), nullable=False)
     # Plain UUID reference without cross-module DB ForeignKey constraint (ADR-004 / DAT-03)
     usuario_id = Column(UUID(as_uuid=True), nullable=False)
     asunto = Column(String(150), nullable=False)
@@ -290,7 +275,6 @@ class SoporteTicket(AuditMixin, Base):
         server_default="abierto",
     )
 
-    empresa = relationship("Empresa", back_populates="soporte_tickets")
     usuario = relationship(
         "Usuario",
         primaryjoin="foreign(SoporteTicket.usuario_id) == Usuario.id",
@@ -347,7 +331,8 @@ class AgentCommand(AuditMixin, Base):
     __tablename__ = "agent_commands"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    empresa_id = Column(UUID(as_uuid=True), ForeignKey("empresas.id", ondelete="CASCADE"), nullable=False)
+    # Plain UUID tenancy reference without cross-module DB ForeignKey (ADR-006 / DAT-03)
+    empresa_id = Column(UUID(as_uuid=True), nullable=False)
     conversation_id = Column(String(100), nullable=False)
     command_id = Column(String(100), nullable=False)
     action = Column(String(50), nullable=False)
@@ -355,8 +340,6 @@ class AgentCommand(AuditMixin, Base):
     status = Column(String(30), nullable=False, default="PENDIENTE")
     result = Column(Text, nullable=True)
     executed_at = Column(DateTime(timezone=True), nullable=True)
-
-    empresa = relationship("Empresa", back_populates="agent_commands")
 
     __table_args__ = (
         UniqueConstraint("empresa_id", "command_id", name="uq_empresa_command_id"),

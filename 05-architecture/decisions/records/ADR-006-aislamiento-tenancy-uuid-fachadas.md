@@ -93,7 +93,7 @@ Inspección realizada sobre `app/models.py`, `alembic/versions/001..013`, `app/s
 
 | Migración | Alcance exclusivo | Propósito de la separación |
 |---|---|---|
-| **`014` (`014_desacoplar_fks_tenancy_empresa_id.py`)** | Retiro reversible de las 4 FKs cruzadas de `empresa_id -> empresas.id` (`productos`, `ventas`, `soporte_tickets`, `agent_commands`) y garantía de los 4 índices de tenancy (`CREATE INDEX IF NOT EXISTS`). | Aísla el cambio estructural de tenancy (`DAT-03`) con rollback limpio y riesgo acotado. |
+| **`014` (`014_desacoplar_fks_tenancy_empresa_id.py`)** | Retiro reversible de las 4 FKs cruzadas de `empresa_id -> empresas.id` (`productos`, `ventas`, `soporte_tickets`, `agent_commands`), reconciliación idempotente de las 3 FKs cruzadas que ADR-004 ya retiraba (`ventas.usuario_id`, `detalles_venta.producto_id`, `soporte_tickets.usuario_id`) si persisten por un esquema legado creado con `create_all()`, y garantía de los 4 índices de tenancy (`CREATE INDEX IF NOT EXISTS`). | Aísla el cambio estructural de tenancy (`DAT-03`) con rollback limpio y repara esquemas heredados sin tratar una FK cruzada conocida como excepción de prueba. |
 | **`015` (`015_snapshots_detalles_venta_y_unicidad_activa_productos.py`)** | Adición de `producto_nombre_snapshot`, `producto_codigo_snapshot` y `producto_unidad_snapshot` en `detalles_venta`, backfill histórico desde `productos`, migración de la respuesta de ventas a snapshots sin `joinedload`, y reemplazo de `uq_producto_empresa_barras` por índice único parcial `WHERE is_active = true`. | Evita mezclar backfill de datos e índices únicos parciales con el desacople de FKs de tenancy, permitiendo probar y revertir cada paso de forma independiente. |
 
 ## Alternatives evaluated
@@ -123,7 +123,8 @@ Inspección realizada sobre `app/models.py`, `alembic/versions/001..013`, `app/s
 ### Reversión de Migración `014` (desacople de FKs de tenancy)
 
 1. **`upgrade()` defensivo (constraints con y sin nombre explícito):**
-   - Debido a que las migraciones `006` (`soporte_tickets`) y `010` (`agent_commands`) crearon `FOREIGN KEY (empresa_id) REFERENCES empresas(id)` sin nombre explícito, `upgrade()` inspeccionará `pg_constraint` (por tabla origen, columna `empresa_id` y tabla referenciada `empresas`) y ejecutará `ALTER TABLE <tabla> DROP CONSTRAINT <nombre_real>` para `productos`, `ventas`, `soporte_tickets` y `agent_commands`.
+   - Debido a que las migraciones `006` (`soporte_tickets`) y `010` (`agent_commands`) crearon `FOREIGN KEY (empresa_id) REFERENCES empresas(id)` sin nombre explícito, `upgrade()` inspeccionará `pg_constraint` por tabla origen, columna y tabla referenciada y ejecutará `ALTER TABLE <tabla> DROP CONSTRAINT <nombre_real>` para `productos`, `ventas`, `soporte_tickets` y `agent_commands`.
+   - Como reconciliación idempotente de esquemas creados con `create_all()` antes de Alembic, también eliminará, solo si aún existen, las FKs que el estado canónico de `013` ya debía haber retirado: `ventas.usuario_id -> usuarios.id`, `detalles_venta.producto_id -> productos.id` y `soporte_tickets.usuario_id -> usuarios.id`. El `downgrade()` no las restaura porque no forman parte del estado canónico de `013`.
    - Verificará la presencia de los índices de `empresa_id` mediante `CREATE INDEX IF NOT EXISTS` (`idx_productos_empresa`, `idx_ventas_empresa_fecha`, `idx_soporte_tickets_empresa`, `idx_agent_commands_empresa`).
    - No tocará ninguna de las 3 FKs intra-módulo (`usuarios`, `detalles_venta`, `soporte_mensajes`).
 2. **Precondición y `downgrade()` explícito:**
@@ -142,7 +143,7 @@ Inspección realizada sobre `app/models.py`, `alembic/versions/001..013`, `app/s
 ## Verification and Test Criteria (for S3-2 to S3-5 and Migration 015)
 
 1. **Inspección de metadatos ORM:** `Base.metadata` carga sin `NoForeignKeysError`, declara exactamente **3 FKs intra-módulo** (`usuarios.empresa_id`, `detalles_venta.venta_id`, `soporte_mensajes.ticket_id`), **0 FKs cruzadas** y **0 relaciones ORM cross-module** (sin `viewonly=True`).
-2. **Ciclo completo de migración `014` en PostgreSQL 16:** `alembic upgrade 014 -> alembic downgrade 013 -> alembic upgrade 014` finaliza con código `0`, y `pg_constraint` confirma 3 FKs internas y 0 FKs hacia `empresas` desde módulos externos.
+2. **Ciclo completo de migración `014` en PostgreSQL 16:** `alembic upgrade 014 -> alembic downgrade 013 -> alembic upgrade 014` finaliza con código `0`, y `pg_constraint` confirma exactamente 3 FKs internas y 0 FKs cruzadas, incluidas las tres que un esquema legado pudiera haber conservado pese a `013`.
 3. **Aislamiento por fachada con `404` uniforme:** pruebas de integración demuestran que crear productos, registrar ventas, abrir tickets o registrar comandos de agente con `empresa_id` inexistente o inactivo (`is_active = False`) responde uniformemente **HTTP `404`** vía `AuthTenancyFacade.ensure_active_company()`.
 4. **Ciclo de migración `015`, snapshots e identidad de producto:**
    - `alembic upgrade head -> alembic downgrade -1 -> alembic upgrade head` sobre `015` sale con código `0`.

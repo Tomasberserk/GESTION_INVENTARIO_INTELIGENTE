@@ -1091,34 +1091,40 @@ teclado + LCP), YA que el guion usa las tomas reales. Luego QA1 (Gemini) del lan
 >   - **Comando exacto de verificación:** `git diff 05-architecture/decisions/records/ADR-001* 05-architecture/decisions/records/ADR-002* 05-architecture/decisions/records/ADR-003* 05-architecture/decisions/records/ADR-004* 05-architecture/decisions/records/ADR-005* && git diff --check`
 >   - **Criterio de salida medible:** 0 cambios en ADR-001..005 y `ADR-006` indexado en `05-architecture/decisions/README.md`.
 >   - **Evidencia verificada (`S3-1` + enmienda `S3-1B` con aprobación humana, 2026-11-27 — solo documentación):** `ADR-006` creado y enmendado con las 5 decisiones técnicas aprobadas: (1) retiro completo de relaciones ORM cross-module sin `viewonly=True` y lectura del historial de ventas desde snapshots sin `joinedload` a `Producto`; (2) separación explícita de migración `014` (4 FKs cruzadas de `empresa_id` e índices de tenancy) vs migración `015` (snapshots, backfill, respuesta de ventas e índice único parcial de `productos`); (3) snapshots fijos `producto_nombre_snapshot`, `producto_codigo_snapshot` y `producto_unidad_snapshot` en `detalles_venta` sin duplicar `precio_unitario`, `cantidad` ni `subtotal`, distinguiendo compatibilidad de backfill legada vs obligación en ventas nuevas; (4) identidad de producto sin reactivación automática en `crear_producto()`, UUID nuevo y unicidad parcial `WHERE is_active = true`; (5) contrato uniforme `404` en `AuthTenancyFacade.ensure_active_company()` para empresa inexistente o inactiva (anti-enumeración). Indexado en `05-architecture/decisions/README.md`; `0` cambios en `ADR-001`..`ADR-005`; `git diff --check` exit `0`.
-> - [ ] **S3-2 — Desacople ORM y retiro total de relaciones/cascades cross-module en `app/models.py`:**
->   - **Objetivo:** Quitar `ForeignKey("empresas.id")` en `Producto`, `Venta`, `SoporteTicket`, `AgentCommand`; retirar completamente todas las relaciones ORM cross-module (las 4 `cascade="all, delete-orphan"` en `Empresa` y sus `.empresa`, más las heredadas de `013`, sin `viewonly=True`) y conservar intactas las 3 FKs y relaciones internas.
->   - **Archivo / área afectada:** `app/models.py` (coordinado con la transición de snapshots `015` para lectura de ventas sin `joinedload`).
+> - [x] **S3-2 — Desacople vertical de tenancy en modelo + migración `014` y pruebas PostgreSQL (completado; sin cerrar `DAT-03`):**
+>   - **Objetivo:** Retirar las 4 `ForeignKey("empresas.id")` y las 8 asociaciones ORM de tenancy (`Empresa.{productos,ventas,soporte_tickets,agent_commands}` y sus `.empresa`) en `app/models.py` conservando intactas las 3 FKs internas y sin usar `viewonly=True`; crear y validar la migración reversible `014_desacoplar_fks_tenancy_empresa_id.py` (drop defensivo en `pg_constraint`, índices `IF NOT EXISTS`, reconciliación idempotente de las 3 FKs cruzadas que `013` ya retiraba y verificación segura de huérfanos en `downgrade()`). Las asociaciones `Usuario ↔ Venta`, `Producto ↔ DetalleVenta` y `SoporteTicket.usuario` permanecen temporalmente hasta `S3-3`.
+>   - **Archivo / área afectada:** `app/models.py`, `alembic/versions/014_desacoplar_fks_tenancy_empresa_id.py`, `tests/unit/test_tenancy_orm_decoupling.py`, `tests/integration/postgres/test_migration_014_tenancy_fks.py`.
 >   - **Dependencia:** S3-1, S1-1.
->   - **Riesgo:** Alto (`NoForeignKeysError` en SQLAlchemy o impacto en `joinedload`/tests de modelos).
->   - **Comando exacto de verificación:** `.\.venv\Scripts\pytest.exe tests/test_fase1_rbac_modelos.py tests/unit/ -v`
->   - **Criterio de salida medible:** Mappers ORM cargan sin error; `Base.metadata` contiene exactamente 3 FKs internas, 0 FKs cruzadas y 0 relaciones ORM cross-module.
-> - [ ] **S3-3 — Migración reversible `014_desacoplar_fks_tenancy_empresa_id.py` (y `015` para snapshots/unicidad activa):**
->   - **Objetivo:** En `014`, eliminar en PostgreSQL las 4 FKs cruzadas hacia `empresas.id` con drop defensivo, garantizar índices sobre `empresa_id` y restaurar todo en `downgrade()`; separar en `015` los snapshots de `detalles_venta`, backfill, respuesta de ventas sin `joinedload` e índice único parcial `WHERE is_active = true` en `productos`.
->   - **Archivo / área afectada:** `alembic/versions/014_desacoplar_fks_tenancy_empresa_id.py` (y futura `alembic/versions/015_*`).
+>   - **Riesgo:** Alto (constraints sin nombre explícito en migraciones `006` y `010`; rollback seguro ante huérfanos).
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\pytest.exe tests/unit/test_tenancy_orm_decoupling.py tests/integration/postgres/test_migration_014_tenancy_fks.py tests/test_fase1_rbac_modelos.py tests/unit/ -v` + `alembic upgrade head && alembic downgrade -1 && alembic upgrade head` + `ruff check app` + `lint-imports`.
+>   - **Criterio de salida medible:** `Base.metadata` y PostgreSQL `pg_constraint` contienen exactamente 3 FKs internas y 0 FKs cruzadas, las 8 asociaciones ORM de tenancy eliminadas, `upgrade → downgrade → upgrade` en código `0` y fallo seguro ante huérfanos. **`DAT-03` NO se declara cerrado hasta completar `S3-3`, `S3-4` y `S3-5`.**
+>   - **Evidencia verificada (2026-11-27, local `.venv` Python `3.12.13` + PostgreSQL `gestion_neiva_test`):**
+>     - **TDD RED (antes de editar `app/models.py` ni crear `014`):** `4 failed, 1 passed` (fallaron las 3 aserciones de FKs/relaciones de tenancy y la ausencia de revisión `014`; pasó el puente temporal hasta `S3-3`).
+>     - **TDD GREEN:** `tests/unit/test_tenancy_orm_decoupling.py` + `tests/integration/postgres/test_migration_014_tenancy_fks.py` → **`5 passed (8.50s)`** (incluyendo bloqueo seguro de `downgrade 013` ante `empresa_id` huérfano, restauración con los 4 nombres `ADR-006` + `ON DELETE CASCADE`, y re-upgrade a `014`); `tests/test_fase1_rbac_modelos.py tests/unit/ -v` → **`15 passed (1.27s)`**.
+>     - **Ciclo Alembic PostgreSQL (`gestion_neiva_test`):** `alembic upgrade head` → `014 (head)` (`0`), `alembic downgrade -1` → `013` (`0`), `alembic upgrade head` → `014 (head)` (`0`).
+>     - **Calidad estática e higiene:** `ruff check app` → `All checks passed!`; `lint-imports` → `Contracts: 7 kept, 0 broken.`; `git diff --check` exit `0`. **Nota:** `DAT-03` permanece abierto hasta completar `S3-3`, `S3-4` y `S3-5`.
+>     - **Endurecimiento y PostgreSQL real (2026-11-27):** una prueba TDD nueva verificó la reconciliación de tres FKs cruzadas legadas que podían sobrevivir a `013` en esquemas creados con `create_all()`. La integración fuerza `013 → 014` para ejecutar la fuente actual de la migración, valida exactamente **3 FKs internas / 0 cruzadas**, guarda de huérfanos, rollback y re-upgrade. Batería final: **`22 passed, 1 warning in 7.29s`** (incluye PostgreSQL); `ruff`, `compileall`, `lint-imports` (`7 kept`) y `git diff --check` en verde.
+> - [ ] **S3-3 — Migración `015`, snapshots históricos, serialización de ventas, unicidad parcial y retiro final de relaciones ORM restantes:**
+>   - **Objetivo:** Implementar la migración reversible `015` (snapshots `producto_nombre_snapshot`, `producto_codigo_snapshot`, `producto_unidad_snapshot` en `detalles_venta`, backfill desde `productos` e índice único parcial `WHERE is_active = true` en `productos`), migrar `DetalleVentaRespuesta`/`venta_service` a snapshots sin `joinedload`, prohibir reactivación implícita en `crear_producto()` y retirar finalmente las relaciones ORM cross-module restantes (`Usuario ↔ Venta`, `Producto ↔ DetalleVenta`, `SoporteTicket.usuario`).
+>   - **Archivo / área afectada:** `alembic/versions/015_*`, `app/models.py`, `app/inventario/api/contracts.py`, `app/services/venta_service.py`, `app/schemas/venta.py`, `app/services/producto_service.py`.
 >   - **Dependencia:** S3-2.
->   - **Riesgo:** Alto (constraints sin nombre explícito en migraciones 006 y 010).
->   - **Comando exacto de verificación:** `.\.venv\Scripts\alembic.exe upgrade head && .\.venv\Scripts\alembic.exe downgrade -1 && .\.venv\Scripts\alembic.exe upgrade head`
->   - **Criterio de salida medible:** `upgrade → downgrade → upgrade` salen con código `0` y `pg_constraint` reporta 0 FKs cruzadas y 3 internas.
+>   - **Riesgo:** Alto (backfill histórico, serialización de ventas y cambio de unicidad de `codigo_barras`).
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\alembic.exe upgrade head && .\.venv\Scripts\alembic.exe downgrade -1 && .\.venv\Scripts\alembic.exe upgrade head && .\.venv\Scripts\pytest.exe tests/ -q`
+>   - **Criterio de salida medible:** 0 relaciones ORM cross-module en `app/models.py`, historial de ventas autónomo desde snapshots sin `joinedload`, UUID nuevo para productos recreados y migración `015` reversible.
 > - [ ] **S3-4 — Validación de tenant activo por `AuthTenancyFacade` en escrituras cross-module:**
 >   - **Objetivo:** Reemplazar queries directas a `models.Empresa` y blindar escrituras en `inventario`, `pos_ventas`, `soporte_crm`, `agente_ia` y `dependencies.py` invocando `AuthTenancyFacade.ensure_active_company()` con contrato `404` uniforme.
 >   - **Archivo / área afectada:** `app/services/producto_service.py`, `venta_service.py`, `app/routers/soporte.py`, `app/services/agente/agent_orchestrator.py`, `app/dependencies.py`.
->   - **Dependencia:** S3-2.
+>   - **Dependencia:** S3-2, S3-3.
 >   - **Riesgo:** Alto (afecta todas las escrituras de negocio y dependencias JWT).
 >   - **Comando exacto de verificación:** `.\.venv\Scripts\pytest.exe tests/ -q`
 >   - **Criterio de salida medible:** 100% de suite pasa y toda escritura con `empresa_id` inexistente o inactiva responde `404` uniforme (sin enumeración de tenants).
-> - [ ] **S3-5 — Suite de pruebas de aislamiento DAT-03, rollback y sincronización documental:**
->   - **Objetivo:** Crear tests de esquema, aislamiento por fachada, FKs internas intactas y rollback de migración 014; actualizar `02-domain/module-boundaries.md` y `06-data/*`.
->   - **Archivo / área afectada:** `tests/module_integration/test_dat03_tenancy_isolation.py`, `tests/integration/postgres/test_migration_014_rollback.py`, `02-domain/module-boundaries.md`, `06-data/*`.
+> - [ ] **S3-5 — Suite de pruebas de aislamiento `DAT-03`, verificación final y sincronización documental:**
+>   - **Objetivo:** Consolidar suite de aislamiento por fachada, FKs internas intactas, snapshots y rollback; sincronizar `02-domain/module-boundaries.md` y `06-data/*` a migración `015` y cerrar formalmente `DAT-03`.
+>   - **Archivo / área afectada:** `tests/module_integration/test_dat03_tenancy_isolation.py`, `02-domain/module-boundaries.md`, `06-data/*`.
 >   - **Dependencia:** S3-3, S3-4.
 >   - **Riesgo:** Medio (requiere PostgreSQL de prueba).
->   - **Comando exacto de verificación:** `.\.venv\Scripts\pytest.exe tests/module_integration/test_dat03_tenancy_isolation.py tests/integration/postgres/test_migration_014_rollback.py -v`
->   - **Criterio de salida medible:** 100% de pruebas DAT-03 y rollback en verde; docs `06-data/` sincronizadas a migración 014.
+>   - **Comando exacto de verificación:** `.\.venv\Scripts\pytest.exe tests/module_integration/test_dat03_tenancy_isolation.py tests/integration/postgres/ -v`
+>   - **Criterio de salida medible:** 100% de pruebas `DAT-03` y rollback en verde; docs `06-data/` sincronizadas a migraciones `014`/`015`; cierre formal de `DAT-03`.
 >
 > ### Sprint 4 — Rutas por fachadas y cierre de sustentación
 > - [ ] **S4-1 — Migración de routers `auth`, `empresas` y `usuarios` a `AuthTenancyFacade`:**

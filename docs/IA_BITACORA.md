@@ -1041,7 +1041,6 @@ Comando: `.\.venv\Scripts\pytest.exe tests/unit/test_domain_unit.py::test_regist
 
 > **La IA asistió en la redacción de la enmienda `S3-1B` y sincronización documental; las decisiones técnicas fueron aprobadas y son validadas por el equipo humano.**
 
-
 ---
 
 ## Sesión 2026-11-27 — Auditoría Documental, Matriz de Gobernanza, Trazabilidad y Guía Demo MVP (Frente Javela)
@@ -1072,3 +1071,46 @@ Comando: `.\.venv\Scripts\pytest.exe tests/unit/test_domain_unit.py::test_regist
 - `git diff --stat` y `git diff --check` confirmando cambios exclusivamente en documentación y `0` líneas modificadas en `app/`, `alembic/` o `frontend/`.
 
 > **Declaración de uso de IA:** En esta sesión se utilizó **Antigravity (Google DeepMind / Gemini)** para lectura cruzada de documentación, verificación de existencia de nodos de prueba y contratos en el repositorio, redacción de `MATRIZ_EVIDENCIA_GOBERNANZA.md`, `GUIA_DEMO_TENDERO_MVP.md`, ampliación de `traceability-matrix.md` y corrección de deriva documental. No se ejecutaron despliegues ni se modificó código productivo; la revisión y validación final corresponden al equipo humano.
+
+---
+
+## Sesión 2026-11-27 — S3-2 reordenado: Desacople vertical de tenancy (modelo ORM + migración `014`)
+
+### Reordenamiento aprobado de Sprint 3 (registrado antes de implementar)
+
+- **`S3-2`:** retirar las 4 FKs físicas y las 8 asociaciones ORM de tenancy hacia `Empresa`, más migración `014` reversible y pruebas PostgreSQL.
+- **`S3-3`:** migración `015`, snapshots históricos en `detalles_venta`, backfill, serialización de ventas sin `joinedload`, índice único parcial en `productos` y retiro final de las asociaciones ORM restantes (`Usuario ↔ Venta`, `Producto ↔ DetalleVenta`, `SoporteTicket.usuario`).
+- **Regla de cierre:** `DAT-03` **NO** se declara cerrado en `S3-2`; su cierre requiere completar `S3-3`, `S3-4` y `S3-5`.
+
+### Evidencia TDD RED → GREEN, migración `014` y controles estáticos
+
+- **Archivos creados / modificados en alcance:**
+  - `app/models.py`: eliminadas las 4 `ForeignKey("empresas.id")` (`Producto`, `Venta`, `SoporteTicket`, `AgentCommand`) y las 8 relaciones ORM de tenancy (`Empresa.{productos,ventas,soporte_tickets,agent_commands}` y sus `.empresa`); conservadas intactas las 3 FKs internas (`usuarios.empresa_id`, `detalles_venta.venta_id`, `soporte_mensajes.ticket_id`) y sin `viewonly=True`. Permanecen temporalmente hasta `S3-3`: `Usuario ↔ Venta`, `Producto ↔ DetalleVenta`, `SoporteTicket.usuario`.
+  - `alembic/versions/014_desacoplar_fks_tenancy_empresa_id.py`: `upgrade()` con detección defensiva en `pg_constraint` para constraints con y sin nombre explícito + 4 índices `IF NOT EXISTS`; `downgrade()` con guarda de `empresa_id` huérfanos antes de restaurar las 4 FKs nombradas según `ADR-006` con `ON DELETE CASCADE`.
+  - `tests/unit/test_tenancy_orm_decoupling.py` y `tests/integration/postgres/test_migration_014_tenancy_fks.py`.
+- **TDD RED (antes de implementar):** `4 failed, 1 passed` (`RED_EXIT=1`) — fallaron las 3 validaciones de metadatos/ORM de tenancy y la ausencia de revisión `014`; pasó el puente temporal hacia `S3-3`.
+- **TDD GREEN:**
+  - `tests/unit/test_tenancy_orm_decoupling.py` + `tests/integration/postgres/test_migration_014_tenancy_fks.py`: **`5 passed (8.50s)`** (incluyendo prueba real de bloqueo seguro de `downgrade 013` ante `empresa_id` huérfano en PostgreSQL).
+  - `tests/test_fase1_rbac_modelos.py tests/unit/ -v`: **`15 passed (1.27s)`**.
+- **Ciclo PostgreSQL (`gestion_neiva_test`, sin leer `.env`):**
+  - `alembic upgrade head` → `014 (head)` (`exit 0`)
+  - `alembic downgrade -1` → `013` (`exit 0`, restaurando `fk_productos_empresa_id`, `fk_ventas_empresa_id`, `fk_soporte_tickets_empresa_id`, `fk_agent_commands_empresa_id` con `ON DELETE CASCADE`)
+  - `alembic upgrade head` → `014 (head)` (`exit 0`)
+  - *Nota técnica observada en local:* la base `gestion_neiva_test` tenía nombres autogenerados por `create_all()` previos a Alembic (`*_empresa_id_fkey` y `detalles_venta_producto_id_fkey`); el lookup defensivo en `pg_constraint` de `014` eliminó limpiamente las 4 FKs de tenancy sin depender del nombre del constraint.
+- **Linters e higiene:** `ruff check app` (`All checks passed!`), `lint-imports` (`7 kept, 0 broken`), `git diff --check` (`exit 0`).
+- **Estado de `DAT-03`:** **parcialmente avanzado (NO cerrado)**; pendiente completar `S3-3`, `S3-4` y `S3-5`.
+
+> **La IA asistió en la implementación TDD, migración `014`, pruebas PostgreSQL y documentación; las decisiones y validación final corresponden al equipo humano.**
+
+---
+
+## Sesión 2026-11-27 — Endurecimiento S3-2: reconciliación de FKs legadas de ADR-004
+
+- **Hallazgo y causa raíz:** una base creada previamente con `create_all()` conservaba `detalles_venta_producto_id_fkey` aunque el estado canónico de Alembic `013` ya debía haber retirado la FK cruzada `detalles_venta.producto_id -> productos.id`. La prueba PostgreSQL original toleraba ese residuo; se corrigió para exigir exactamente las tres FKs internas.
+- **Decisión humana aprobada:** `014` reconcilia de forma idempotente, además de las cuatro FKs de tenancy, las FKs cruzadas legadas `ventas.usuario_id -> usuarios.id`, `detalles_venta.producto_id -> productos.id` y `soporte_tickets.usuario_id -> usuarios.id` cuando existan. El `downgrade()` no las restaura porque no pertenecen al estado canónico de `013`.
+- **TDD:** se añadió `tests/unit/test_migration_014_legacy_fk_reconciliation.py`; falló antes de ampliar `014` y pasó después, verificando las siete eliminaciones defensivas por tabla, columna y referencia.
+- **Verificación local disponible:** `21 passed, 1 skipped` (la integración PostgreSQL se omitió porque el servicio local no estaba disponible), `ruff check app` verde, `lint-imports` con `7 kept, 0 broken`, `compileall` y `git diff --check` verdes.
+- **Validación PostgreSQL posterior:** el servicio local fue iniciado y la integración ejecutó el ciclo real `013 → 014 → rollback seguro ante huérfanos → 013 → 014`, con **`1 passed`**. La batería final combinada arrojó **`22 passed, 1 warning in 7.29s`**, junto con `ruff`, `compileall`, `lint-imports` (`7 kept`) y `git diff --check` en verde.
+- **Estado:** S3-2 queda completado localmente. `DAT-03` sigue abierto hasta completar S3-3, S3-4 y S3-5. No se modificaron archivos fuera de alcance.
+
+> **La IA asistió en el análisis de causa raíz, TDD, implementación y documentación; la decisión de alcance y validación final corresponden al equipo humano.**
